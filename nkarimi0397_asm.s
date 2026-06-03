@@ -40,6 +40,30 @@ nkarimi0397_add_test:
 
     .size   nkarimi0397_add_test, .- nkarimi0397_add_test @@ - symbol size (makes the debugger happy)
 
+@ Function Declaration : int busy_delay(int cycles)
+@
+@ Input: r0 (i.e. r0 holds number of cycles to delay)
+@ Returns: r0
+@ 
+
+@ Here is the actual function. DO NOT MODIFY THIS FUNCTION.
+busy_delay:
+
+    push {r6}
+
+    mov r6, r0
+
+delay_label:
+    subs r6, r6, #1
+
+    bge delay_label
+
+    mov r0, #0                      @ Always return zero (success)
+
+    pop {r6}
+
+    bx lr                           @ Return (Branch eXchange) to the address in the link register (lr)
+
 @ Assembly file ended by single .end directive on its own line
 .end
 
