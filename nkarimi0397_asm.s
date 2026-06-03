@@ -35,7 +35,12 @@
 nkarimi0397_add_test:
 
     add r0, r0, r1
+    mov r0, #0xFFFFFF
+    push {lr}
 
+    bl busy_delay
+
+    pop {lr}
     bx lr                           @ Return (Branch eXchange) to the address in the link register (lr) 
 
     .size   nkarimi0397_add_test, .- nkarimi0397_add_test @@ - symbol size (makes the debugger happy)
