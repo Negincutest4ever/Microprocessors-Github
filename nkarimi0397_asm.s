@@ -34,15 +34,16 @@
 @ Here is the actual nkarimi0397_add_test function
 nkarimi0397_add_test:
 
-    add r0, r0, r1
-    mov r0, #0xFFFFFF
-    push {lr}
+    add r0, r0, r1      @ compute x + y
 
+    push {r0, lr}       @ save result and return address
+
+    mov r0, r2          @ pass delay to busy_delay
     bl busy_delay
 
-    pop {lr}
-    bx lr                           @ Return (Branch eXchange) to the address in the link register (lr) 
+    pop {r0, lr}        @ restore result and return address
 
+    bx lr
     .size   nkarimi0397_add_test, .- nkarimi0397_add_test @@ - symbol size (makes the debugger happy)
 
 @ Function Declaration : int busy_delay(int cycles)
