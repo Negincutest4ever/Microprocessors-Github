@@ -11,6 +11,34 @@
 
 int nkarimi0397_add_test(int x, int y, int delay);
 
+int nkarimi0397_string_test(char *p);
+
+void nkarimi0397_StringTest(int action)
+{
+
+  if(action==CMD_SHORT_HELP) return;
+  if(action==CMD_LONG_HELP) {
+    printf("String Test\n\n"
+	   "This command tests new string function by nkarimi0397\n"
+	   );
+
+    return;
+  }
+
+  int fetch_status;
+  char *destptr;
+
+  fetch_status = fetch_string_arg(&destptr);
+
+  if (fetch_status) {
+    // Default logic goes here
+  }
+
+  printf("string_test returned: %d\n", nkarimi0397_string_test(destptr) );
+}
+
+ADD_CMD("nkarimi0397_string", nkarimi0397_StringTest,"Test the new string function")
+
 void AddTest(int action)
 {
 

@@ -1,5 +1,5 @@
 @ Test code for my own new function called from C
-@ jsmith1234_asm.s Data section - initialized values
+@ nkarimi0937_asm.s Data section - initialized values
 .data
 
 .align 3    @ This alignment is critical - to access our "huge" value, it must
@@ -81,6 +81,20 @@ nkarimi0397_add_test:
 
     bx lr
     .size   nkarimi0397_add_test, .- nkarimi0397_add_test @@ - symbol size (makes the debugger happy)
+
+.global nkarimi0397_string_test
+
+@ Function Declaration : int nkarimi0397_string_test(char *p)
+@
+@ Input: r0 (i.e. r0 a pointer to a byte array)
+@ Returns: r0
+@ 
+
+@ Here is the actual function
+nkarimi0397_string_test:
+
+    bx lr
+    .size   nkarimi0397_string_test, .-nkarimi0397_string_test
 
 @ Function Declaration : int busy_delay(int cycles)
 @
