@@ -93,7 +93,6 @@ nkarimi0397_add_test:
 @ Here is the actual function
 nkarimi0397_string_test:
 
-    bx lr
     StringLoop:
 
     ldrb r0, [r1]    @ Load the value pointed to by R0 into R1 as shown above
@@ -104,7 +103,7 @@ nkarimi0397_string_test:
 
     OutLabel:
 
-Return the value of R0
+    bx lr                @Return the value of R0
 
     .size   nkarimi0397_string_test, .-nkarimi0397_string_test
 
