@@ -17,29 +17,34 @@ int nkarimi0397_a2(int num, int wait);
 
 void _nkarimi0397_Assignment2(int action)
 {
-
-  if(action==CMD_SHORT_HELP) return;
-  if(action==CMD_LONG_HELP) {
+  if(action == CMD_SHORT_HELP) return;
+  if(action == CMD_LONG_HELP) {
     printf("Assignment 2\n\n"
-	   "This command triggers assignment 2 by jsmith1234\n"
-	   );
-
+           "Usage: nkarimi0397_a2 <num> <wait>\n"
+           "  num  = number of loop cycles (loops through all 8 LEDs)\n"
+           "  wait = delay value passed to busy_delay\n");
     return;
   }
 
-  // Retrieve user inputs for count and delay here
-    uint32_t user_input;
+  uint32_t user_num;
+  uint32_t user_wait;
   int fetch_status;
 
-  fetch_status = fetch_uint32_arg(&user_input);
-
+  fetch_status = fetch_uint32_arg(&user_num);
   if(fetch_status) {
-  	// Use a default value
-  	user_input = 0xFFFFEF;
+    // Default fallback if the user didn't provide a first argument
+    user_num = 3; 
   }
 
+  fetch_status = fetch_uint32_arg(&user_wait);
+  if(fetch_status) {
+    // Default fallback if the user didn't provide a second argument
+    user_wait = 0xFFFFEF; 
+  }
 
-  printf("nkarimi0397_a2 returned: %d\n", nkarimi0397_a2 (99, 87) );
+  int total_toggles = nkarimi0397_a2(user_num, user_wait);
+
+  printf("nkarimi0397_a2 returned: %d\n", total_toggles);
 }
 
 ADD_CMD("nkarimi0397_a2", _nkarimi0397_Assignment2, "Assignment 2")

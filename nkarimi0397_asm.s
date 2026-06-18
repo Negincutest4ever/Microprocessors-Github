@@ -39,30 +39,35 @@ count:  .word 12345                     @ This is an initialized 32 bit value
 @ Returns: Document This
 @ 
 
+.global nkarimi0397_a2
+    .type nkarimi0397_a2, %function
 nkarimi0397_a2:
+    push {r4-r7, lr}
 
-    mov r4, r0      
-    mov r5, r1     
-    mov r6, #0      
+    mov r4, r0      @ r4 = num
+    mov r5, r1      @ r5 = wait
+    mov r6, #0      @ total toggle count (this will be our return value)
 
 BigLoop:
     cmp r4, #0
     ble Done
 
-    mov r7, #0      
+    mov r7, #0      @ led index = 0
 
 LightLoop:
     cmp r7, #8
     bge NextCycle
 
+    @ Call busy_delay(wait)
     mov r0, r5
     bl busy_delay
 
+    @ Call BSP_LED_Toggle(led_index)
     mov r0, r7
     bl BSP_LED_Toggle
 
-    add r6, r6, #1  
-    add r7, r7, #1  
+    add r6, r6, #1  @ count++
+    add r7, r7, #1  @ next LED
 
     b LightLoop
 
@@ -71,8 +76,13 @@ NextCycle:
     b BigLoop
 
 Done:
-    mov r0, r6      @ return count
+    mov r0, r6      
+
+    pop {r4-r7, lr}
+
     bx lr
+
+    .size   nkarimi0397_a2, .- nkarimi0397_a2
 
 
 @@ Function Header Block
