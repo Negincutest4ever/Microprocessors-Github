@@ -39,40 +39,40 @@ count:  .word 12345                     @ This is an initialized 32 bit value
 @ Returns: Document This
 @ 
 
-@ Here is the assignment 2 assembly function
 nkarimi0397_a2:
 
-    @ Fill in the necessary logic here
-    ldr r0, =wait
-    ldr r1, =num
-    mov r6, #0
-    mov r4, r0
-    mov r5, #3
+    mov r4, r0      
+    mov r5, r1     
+    mov r6, #0      
 
-    BigLoop:
-    cmp r5, #0
-    ble LoopExit
+BigLoop:
+    cmp r4, #0
+    ble Done
 
-    sub r5, r5, #1
-    mov r6, #0
+    mov r7, #0      
 
 LightLoop:
-    cmp r6, #7
-    bgt BigLoop
+    cmp r7, #8
+    bge NextCycle
 
-    ldr r0, [r4]
+    mov r0, r5
     bl busy_delay
 
-    mov r0, r6
+    mov r0, r7
     bl BSP_LED_Toggle
 
-    add r6, r6, #1
+    add r6, r6, #1  
+    add r7, r7, #1  
+
     b LightLoop
 
-LoopExit:
-    bx lr                           @ Return (Branch eXchange) to the address held by the lr 
+NextCycle:
+    sub r4, r4, #1
+    b BigLoop
 
-    .size   nkarimi0397_a2, .- nkarimi0397_a2    @@ - symbol size (makes the debugger happy)
+Done:
+    mov r0, r6      @ return count
+    bx lr
 
 
 @@ Function Header Block
