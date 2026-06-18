@@ -28,25 +28,50 @@ count:  .word 12345                     @ This is an initialized 32 bit value
 @@ Function Header Block
     .align  2               @ Code alignment is 2^n alignment (n=2)
     .syntax unified         @ Sets the instruction set to the unified ARM + THUMB
-    .global jsmith1234_a2   @ Make the symbol name for the function visible to the linker
+    .global nkarimi0397_a2   @ Make the symbol name for the function visible to the linker
     .code   16              @ 16bit THUMB code (BOTH .code and .thumb_func are required)
     .thumb_func             @ Specifies that the following symbol is the name of a THUMB
-    .type   jsmith1234_a2, %function   @ Declares that the symbol is a function (not strictly required)
+    .type   nkarimi0397_a2, %function   @ Declares that the symbol is a function (not strictly required)
 
-@ Function Declaration : int jsmith1234_a2 (int num, int wait)
+@ Function Declaration : int nkarimi0397_a2 (int num, int wait)
 @
 @ Input: Document This
 @ Returns: Document This
 @ 
 
 @ Here is the assignment 2 assembly function
-jsmith1234_a2:
+nkarimi0397_a2:
 
     @ Fill in the necessary logic here
+    mov r3, #0
+    mov r4, r0
+    mov r5, r1
+
+    InternalLoop:
+    cmp r5, #0
+    ble LoopExit
+
+    LightLoop:
+    push {r0, lr}
+    bl busy_delay
+    pop {r0, lr}
+
+    push {r3, lr}
+    bl BSP_LED_Toggle
+    pop {r3, lr}
+    add r3, #1
+    cmp r3, #8
+    ble LightLoop
+
+    b InternalLoop
+
+    LoopExit:
+
+
 
     bx lr                           @ Return (Branch eXchange) to the address held by the lr 
 
-    .size   jsmith1234_a2, .- jsmith1234_a2    @@ - symbol size (makes the debugger happy)
+    .size   nkarimi0397_a2, .- nkarimi0397_a2    @@ - symbol size (makes the debugger happy)
 
 
 @@ Function Header Block
