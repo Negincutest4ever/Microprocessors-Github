@@ -26,6 +26,30 @@ count:  .word 12345                     @ This is an initialized 32 bit value
                             @ assembly language instructions - Code section (text -> ROM)
 
 @@ Function Header Block
+    .align  2               @ Code alignment is 2^n alignment (n=2)
+    .syntax unified         @ Sets the instruction set to the unified ARM + THUMB
+    .global jsmith1234_a2   @ Make the symbol name for the function visible to the linker
+    .code   16              @ 16bit THUMB code (BOTH .code and .thumb_func are required)
+    .thumb_func             @ Specifies that the following symbol is the name of a THUMB
+    .type   jsmith1234_a2, %function   @ Declares that the symbol is a function (not strictly required)
+
+@ Function Declaration : int jsmith1234_a2 (int num, int wait)
+@
+@ Input: Document This
+@ Returns: Document This
+@ 
+
+@ Here is the assignment 2 assembly function
+jsmith1234_a2:
+
+    @ Fill in the necessary logic here
+
+    bx lr                           @ Return (Branch eXchange) to the address held by the lr 
+
+    .size   jsmith1234_a2, .- jsmith1234_a2    @@ - symbol size (makes the debugger happy)
+
+
+@@ Function Header Block
     .align  2               @ Code alignment - 2^n alignment (n=2)
                             @ This causes the assembler to use 4 byte alignment
 
