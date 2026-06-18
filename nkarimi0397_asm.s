@@ -45,19 +45,19 @@ nkarimi0397_a2:
     @ Fill in the necessary logic here
     ldr r0, =wait
     ldr r1, =num
-    mov r3, #3
+    mov r6, #0
     mov r4, r0
     mov r5, #3
 
     LightLoop:
-    mov r0, r3
+    mov r0, r6
     bl BSP_LED_Toggle
 
-    cmp r3, #10
+    cmp r6, #7
     bgt LoopExit
 
-    add r3, r3, #1
-    
+    add r6, r6, #1
+
     b LightLoop
 
     LoopExit:
