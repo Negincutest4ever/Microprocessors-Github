@@ -94,6 +94,18 @@ nkarimi0397_add_test:
 nkarimi0397_string_test:
 
     bx lr
+    StringLoop:
+
+    ldrb r0, [r1]    @ Load the value pointed to by R0 into R1 as shown above
+    cmp r1, 0       @ Check if that value is zero – if it is, branch out
+    beq OutLabel
+    add r1, r1, #1  @ Add one to R0
+    b StringLoop    @ Branch back to string loop
+
+    OutLabel:
+
+Return the value of R0
+
     .size   nkarimi0397_string_test, .-nkarimi0397_string_test
 
 @ Function Declaration : int busy_delay(int cycles)
