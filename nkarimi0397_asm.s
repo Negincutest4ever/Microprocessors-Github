@@ -96,9 +96,9 @@ nkarimi0397_string_test:
     StringLoop:
 
     ldrb r0, [r1]    @ Load the value pointed to by R0 into R1 as shown above
-    cmp r1, 0       @ Check if that value is zero – if it is, branch out
+    cmp r0, #0       @ Check if that value is zero – if it is, branch out
     beq OutLabel
-    add r1, r1, #1  @ Add one to R0
+    add r0, r0, #1  @ Add one to R0
     b StringLoop    @ Branch back to string loop
 
     OutLabel:
