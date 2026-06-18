@@ -35,7 +35,7 @@ void _nkarimi0397_Assignment2(int action)
 
   if(fetch_status) {
   	// Use a default value
-  	user_input = 0xFFFFEF;
+  	user_input = 0xF;
   }
 
 

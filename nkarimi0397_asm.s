@@ -49,8 +49,14 @@ nkarimi0397_a2:
     mov r4, r0
     mov r5, #3
 
+    BigLoop:
+    cmp r5, #0
+    ble LoopExit
+    sub r5, r5, #1
+    b LightLoop
+
     LightLoop:
-    
+
     mov r0, r4
     bl busy_delay
 
@@ -58,7 +64,7 @@ nkarimi0397_a2:
     bl BSP_LED_Toggle
 
     cmp r6, #7
-    bgt LoopExit
+    bgt BigLoop
 
     add r6, r6, #1
 
