@@ -52,26 +52,24 @@ nkarimi0397_a2:
     BigLoop:
     cmp r5, #0
     ble LoopExit
+
     sub r5, r5, #1
-    b LightLoop
+    mov r6, #0
 
-    LightLoop:
+LightLoop:
+    cmp r6, #7
+    bgt BigLoop
 
-    mov r0, r4
+    ldr r0, [r4]
     bl busy_delay
 
     mov r0, r6
     bl BSP_LED_Toggle
 
-    cmp r6, #7
-    bgt BigLoop
-
     add r6, r6, #1
-
     b LightLoop
 
-    LoopExit:
-
+LoopExit:
     bx lr                           @ Return (Branch eXchange) to the address held by the lr 
 
     .size   nkarimi0397_a2, .- nkarimi0397_a2    @@ - symbol size (makes the debugger happy)
