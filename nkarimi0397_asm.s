@@ -50,6 +50,10 @@ nkarimi0397_a2:
     mov r5, #3
 
     LightLoop:
+    
+    mov r0, r4
+    bl busy_delay
+
     mov r0, r6
     bl BSP_LED_Toggle
 
