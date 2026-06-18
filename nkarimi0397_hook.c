@@ -13,6 +13,38 @@ int nkarimi0397_add_test(int x, int y, int delay);
 
 int nkarimi0397_string_test(char *p);
 
+int nkarimi0397_a2(int num, int wait); 
+
+void _nkarimi0397_Assignment2(int action)
+{
+
+  if(action==CMD_SHORT_HELP) return;
+  if(action==CMD_LONG_HELP) {
+    printf("Assignment 2\n\n"
+	   "This command triggers assignment 2 by jsmith1234\n"
+	   );
+
+    return;
+  }
+
+  // Retrieve user inputs for count and delay here
+    uint32_t user_input;
+  int fetch_status;
+
+  fetch_status = fetch_uint32_arg(&user_input);
+
+  if(fetch_status) {
+  	// Use a default value
+  	user_input = 0xFFFFEF;
+  }
+
+
+  printf("nkarimi0397_a2 returned: %d\n", nkarimi0397_a2 (99, 87) );
+}
+
+ADD_CMD("nkarimi0397_a2", _nkarimi0397_Assignment2, "Assignment 2")
+
+
 void nkarimi0397_StringTest(int action)
 {
 
