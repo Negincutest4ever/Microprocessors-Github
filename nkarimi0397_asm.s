@@ -35,54 +35,70 @@ count:  .word 12345                     @ This is an initialized 32 bit value
 
 @ Function Declaration : int nkarimi0397_a2 (int num, int wait)
 @
-@ Input: Document This
-@ Returns: Document This
-@ 
+@ Description:
+@   Toggles LEDs 0 through 7 repeatedly.
+@   The LEDs are toggled once each during every cycle.
+@   A delay is performed before each toggle.
+@
+@ Parameters:
+@   r0 (num)  - Number of complete LED cycles to perform.
+@               One cycle toggles LEDs 0-7 once each.
+@
+@   r1 (wait) - Delay value passed to busy_delay()
+@               before each LED toggle.
+@
+@ Returns:
+@   r0 - Total number of LED toggles performed.
+@        This value equals num * 8.
+@
 
 .global nkarimi0397_a2
-    .type nkarimi0397_a2, %function
-nkarimi0397_a2:
-    push {r4-r7, lr}
+.type nkarimi0397_a2, %function
 
-    mov r4, r0      @ r4 = num
-    mov r5, r1      @ r5 = wait
-    mov r6, #0      @ total toggle count (this will be our return value)
+nkarimi0397_a2:
+
+    push {r4-r7, lr}     @ Save registers and return address
+
+    mov r4, r0           @ r4 = num (number of cycles remaining)
+    mov r5, r1           @ r5 = wait delay value
+    mov r6, #0           @ r6 = total toggle counter
 
 BigLoop:
-    cmp r4, #0
-    ble Done
 
-    mov r7, #0      @ led index = 0
+    cmp r4, #0           @ Check if all cycles have been completed
+    ble Done             @ If num <= 0, exit function
+
+    mov r7, #0           @ Start with LED 0
 
 LightLoop:
-    cmp r7, #8
-    bge NextCycle
 
-    @ Call busy_delay(wait)
-    mov r0, r5
-    bl busy_delay
+    cmp r7, #8           @ Have LEDs 0-7 all been toggled?
+    bge NextCycle        @ If yes, start next cycle
 
-    @ Call BSP_LED_Toggle(led_index)
-    mov r0, r7
-    bl BSP_LED_Toggle
+    mov r0, r5           @ Place wait value into parameter register
+    bl busy_delay        @ Call busy_delay(wait)
 
-    add r6, r6, #1  @ count++
-    add r7, r7, #1  @ next LED
+    mov r0, r7           @ Place LED number into parameter register
+    bl BSP_LED_Toggle    @ Toggle LED specified by r7
 
-    b LightLoop
+    add r6, r6, #1       @ Increment total toggle count
+    add r7, r7, #1       @ Move to next LED
+
+    b LightLoop          @ Continue LED loop
 
 NextCycle:
-    sub r4, r4, #1
-    b BigLoop
+
+    sub r4, r4, #1       @ One full cycle completed
+    b BigLoop            @ Repeat until all cycles finished
 
 Done:
-    mov r0, r6      
 
-    pop {r4-r7, lr}
+    mov r0, r6           @ Return total toggle count
 
-    bx lr
+    pop {r4-r7, lr}      @ Restore saved registers
+    bx lr                @ Return to caller
 
-    .size   nkarimi0397_a2, .- nkarimi0397_a2
+.size nkarimi0397_a2, .- nkarimi0397_a2
 
 
 @@ Function Header Block
