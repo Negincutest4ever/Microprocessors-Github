@@ -43,29 +43,10 @@ count:  .word 12345                     @ This is an initialized 32 bit value
 nkarimi0397_a2:
 
     @ Fill in the necessary logic here
-    mov r3, #0
-    mov r4, r0
-    mov r5, r1
-
-    InternalLoop:
-    cmp r5, #0
-    ble LoopExit
-
-    LightLoop:
+    mov r0, #1
     push {r0, lr}
-    bl busy_delay
-    pop {r0, lr}
-
-    push {r3, lr}
     bl BSP_LED_Toggle
-    pop {r3, lr}
-    add r3, #1
-    cmp r3, #8
-    ble LightLoop
-
-    b InternalLoop
-
-    LoopExit:
+    pop {r0,lr}
 
 
 
