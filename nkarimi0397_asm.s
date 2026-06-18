@@ -45,29 +45,22 @@ nkarimi0397_a2:
     @ Fill in the necessary logic here
     ldr r0, =wait
     ldr r1, =num
-    mov r3, #0
+    mov r3, #3
     mov r4, r0
     mov r5, #3
 
-    InternalLoop:
-    cmp r5, #0
-    ble LoopExit
-
     LightLoop:
     mov r0, r3
-    push {r0, lr}
     bl BSP_LED_Toggle
-    pop {r0, lr}
-    add r3, #1
-    cmp r3, #8
-    ble LightLoop
 
-    sub r5, #1
-    b InternalLoop
+    cmp r3, #10
+    bgt LoopExit
+
+    add r3, r3, #1
+    
+    b LightLoop
 
     LoopExit:
-
-
 
     bx lr                           @ Return (Branch eXchange) to the address held by the lr 
 
