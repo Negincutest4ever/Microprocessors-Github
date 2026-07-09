@@ -11,7 +11,7 @@
 
 #include "common.h"
 
-int nkarimi0397_lab6(int x, int y);
+int nkarimi0397_lab6(int delay);
 
 void Lab6_nkarimi0397(int action)
 {
@@ -24,7 +24,16 @@ void Lab6_nkarimi0397(int action)
 
     return;
   }
-  printf("nkarimi0397_lab6 returned: %d\n", nkarimi0397_lab6(99, 87) );
+
+  int fetch_status;
+  uint32_t user_wait;
+  fetch_status = fetch_uint32_arg(&user_wait);
+ if(fetch_status) {
+    // Default fallback if the user didn't provide a argument
+    user_wait = 0xFFFFEF; 
+  }
+
+  printf("nkarimi0397_lab6 returned: %d\n", nkarimi0397_lab6(user_wait) );
 }
 
 ADD_CMD("nkarimi0397_lab6", Lab6_nkarimi0397,"Test the new lab 6 function")
