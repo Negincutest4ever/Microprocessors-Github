@@ -1,7 +1,7 @@
 /*
  *  C to assembler menu hook
  *
- *  Modified by jsmith1234
+ *  Modified by nkarimi0397
  * 
  */
 
@@ -11,33 +11,33 @@
 
 #include "common.h"
 
-int jsmith1234_lab6(int x, int y);
+int nkarimi0397_lab6(int x, int y);
 
-void Lab6_jsmith1234(int action)
+void Lab6_nkarimi0397(int action)
 {
 
   if(action==CMD_SHORT_HELP) return;
   if(action==CMD_LONG_HELP) {
     printf("Lab 6\n\n"
-	   "This command tests new lab 6 function by jsmith1234\n"
+	   "This command tests new lab 6 function by nkarimi0397\n"
 	   );
 
     return;
   }
-  printf("jsmith1234_lab6 returned: %d\n", jsmith1234_lab6(99, 87) );
+  printf("nkarimi0397_lab6 returned: %d\n", nkarimi0397_lab6(99, 87) );
 }
 
-ADD_CMD("jsmith1234_lab6", Lab6_jsmith1234,"Test the new lab 6 function")
+ADD_CMD("nkarimi0397_lab6", Lab6_nkarimi0397,"Test the new lab 6 function")
 
-int jsmith1234_a3(char *pattern_ptr);
+int nkarimi0397_a3(char *pattern_ptr);
 
-void A3_jsmith1234(int action)
+void A3_nkarimi0397(int action)
 {
 
   if(action==CMD_SHORT_HELP) return;
   if(action==CMD_LONG_HELP) {
     printf("Assignment 3 Test\n\n"
-	   "This is the A3 function by jsmith1234\n"
+	   "This is the A3 function by nkarimi0397\n"
 	   );
 
     return;
@@ -53,7 +53,7 @@ void A3_jsmith1234(int action)
     pattern = "Test Pattern";
   }
 
-  printf("jsmith1234_a3 returned: %d\n", jsmith1234_a3(pattern) );
+  printf("nkarimi0397_a3 returned: %d\n", nkarimi0397_a3(pattern) );
 }
 
-ADD_CMD("jsmith1234_a3", A3_jsmith1234,"Run A3 for jsmith1234")
+ADD_CMD("nkarimi0397_a3", A3_nkarimi0397,"Run A3 for nkarimi0397")
