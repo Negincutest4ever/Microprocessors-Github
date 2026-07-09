@@ -56,7 +56,7 @@ nkarimi0397_lab6:
         bl   busy_delay          @ delay for user-specified amount
 
         bl   BSP_PB_GetState     @ check button state -> r0
-        cmp  r0, #1               @ 1 = pressed (adjust if your BSP is inverted)
+        cmp  r0, #1              @ 1 = pressed (adjust if your BSP is inverted)
         beq  loop_done
 
         b    loop_top
