@@ -13,7 +13,7 @@
 #include "common.h"
 
 int nkarimi0397_lab6(int delay);
-int jsmith1234_lab7();
+int nkarimi0397_lab7();
 
 void Lab6_nkarimi0397(int action)
 {
@@ -69,7 +69,7 @@ void A3_nkarimi0397(int action)
 
 ADD_CMD("nkarimi0397_a3", A3_nkarimi0397,"Run A3 for nkarimi0397")
 
-void Lab7_jsmith1234(int action)
+void Lab7_nkarimi0397(int action)
 
 {
 
@@ -79,7 +79,7 @@ if(action==CMD_LONG_HELP) {
 
 printf("Lab 6\n\n"
 
-"This command tests new lab 7 function by jsmith1234\n"
+"This command tests new lab 7 function by nkarimi0397\n"
 
 );
 
@@ -105,8 +105,8 @@ xyz[1] / 256,
 
 xyz[2] / 256);
 
-printf("jsmith1234_lab7 returned: %d\n", jsmith1234_lab7() );
+printf("nkarimi0397_lab7 returned: %d\n", nkarimi0397_lab7() );
 
 }
 
-ADD_CMD("jsmith1234_lab7", Lab7_jsmith1234,"Test the new lab 7 function")
+ADD_CMD("nkarimi0397_lab7", Lab7_nkarimi0397,"Test the new lab 7 function")

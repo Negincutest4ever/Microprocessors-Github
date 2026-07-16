@@ -71,15 +71,15 @@ nkarimi0397_lab6:
 
 @@ Function Header Block
 
-.global jsmith1234_lab7
+.global nkarimi0397_lab7
  
 @ Make the symbol name for the function visible to the linker
 
-.type jsmith1234_lab7, %function
+.type nkarimi0397_lab7, %function
  
 @ Declares that the symbol is a function (not strictly required)
 
-@ Function Declaration : int jsmith1234_lab7(int x, int y)
+@ Function Declaration : int nkarimi0397_lab7(int x, int y)
 
 @
 
@@ -89,9 +89,9 @@ nkarimi0397_lab6:
 
 @
 
-@ Here is the actual jsmith1234_lab7 function
+@ Here is the actual nkarimi0397_lab7 function
 
-jsmith1234_lab7:
+nkarimi0397_lab7:
 
 push {lr}
 
@@ -111,7 +111,7 @@ bx lr
  
 @ Return (Branch eXchange) to the address in the link register (lr)
 
-.size jsmith1234_lab7, .-jsmith1234_lab7
+.size nkarimi0397_lab7, .-nkarimi0397_lab7
  
 @@ - symbol size (not strictly required)
 
