@@ -75,9 +75,7 @@ nkarimi0397_lab6:
  
 @ Make the symbol name for the function visible to the linker
 
-.type
- 
-jsmith1234_lab7, %function
+.type jsmith1234_lab7, %function
  
 @ Declares that the symbol is a function (not strictly required)
 
@@ -113,9 +111,7 @@ bx lr
  
 @ Return (Branch eXchange) to the address in the link register (lr)
 
-.size
- 
-jsmith1234_lab7, .-jsmith1234_lab7
+.size jsmith1234_lab7, .-jsmith1234_lab7
  
 @@ - symbol size (not strictly required)
 

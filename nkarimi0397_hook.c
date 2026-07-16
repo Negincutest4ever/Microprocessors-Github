@@ -13,6 +13,7 @@
 #include "common.h"
 
 int nkarimi0397_lab6(int delay);
+int jsmith1234_lab7();
 
 void Lab6_nkarimi0397(int action)
 {
