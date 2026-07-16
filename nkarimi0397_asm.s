@@ -69,6 +69,56 @@ nkarimi0397_lab6:
     .size   nkarimi0397_lab6, .-nkarimi0397_lab6    @@ - symbol size (not strictly required, but makes the debugger happy)
 
 
+@@ Function Header Block
+
+.global jsmith1234_lab7
+ 
+@ Make the symbol name for the function visible to the linker
+
+.type
+ 
+jsmith1234_lab7, %function
+ 
+@ Declares that the symbol is a function (not strictly required)
+
+@ Function Declaration : int jsmith1234_lab7(int x, int y)
+
+@
+
+@ Input: r0, r1 (i.e. r0 holds x, r1 holds y)
+
+@ Returns: r0
+
+@
+
+@ Here is the actual jsmith1234_lab7 function
+
+jsmith1234_lab7:
+
+push {lr}
+
+@ These lines just show that the code is working
+
+ldr r0, =0xFFFFF
+
+bl busy_delay
+
+@ Get the state of the user button here.
+
+@ Return the result to the calling C function
+
+pop {lr}
+
+bx lr
+ 
+@ Return (Branch eXchange) to the address in the link register (lr)
+
+.size
+ 
+jsmith1234_lab7, .-jsmith1234_lab7
+ 
+@@ - symbol size (not strictly required)
+
 .global nkarimi0397_a3
 .type   nkarimi0397_a3, %function
 
