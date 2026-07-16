@@ -79,39 +79,29 @@ nkarimi0397_lab6:
  
 @ Declares that the symbol is a function (not strictly required)
 
-@ Function Declaration : int nkarimi0397_lab7(int x, int y)
-
+@ Function Declaration : int nkarimi0397_lab7(int delay)
 @
-
-@ Input: r0, r1 (i.e. r0 holds x, r1 holds y)
-
+@ Input: r0 (r0 holds the delay value)
 @ Returns: r0
-
 @
-
-@ Here is the actual nkarimi0397_lab7 function
 
 nkarimi0397_lab7:
 
-push {lr}
+    push {lr}
 
-@ These lines just show that the code is working
+    @ r0 already contains the delay value passed by the caller,
+    @ so we can call busy_delay directly with it
+    bl   busy_delay
 
-ldr r0, =0xFFFFF
+    @ Get the state of the user button here.
+    @ Return the result to the calling C function
 
-bl busy_delay
+    pop {lr}
 
-@ Get the state of the user button here.
+    bx lr
+    @ Return (Branch eXchange) to the address in the link register (lr)
 
-@ Return the result to the calling C function
-
-pop {lr}
-
-bx lr
- 
-@ Return (Branch eXchange) to the address in the link register (lr)
-
-.size nkarimi0397_lab7, .-nkarimi0397_lab7
+    .size nkarimi0397_lab7, .-nkarimi0397_lab7
  
 @@ - symbol size (not strictly required)
 
