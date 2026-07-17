@@ -121,41 +121,52 @@ nkarimi0397_lab7:
 @          r2 = maximum number of full pattern repeats before stopping
 @ Returns: r0 = total number of times BSP_LED_Toggle was called
 @
-nkarimi0397_a3:
-    push {r4, r5, r6, r7, r8, lr}  
-                                  
 
-    mov  r5, r0            
-    mov  r6, r2             
-    mov  r8, #0             
+nkarimi0397_a3:
+    push {r4, r5, r6, r7, r8, lr}
+
+    mov  r5, r0
+    mov  r4, r1
+    mov  r6, r2
+    mov  r8, #0
 
 repeat_loop:
     cmp  r6, #0
-    beq  a3_done            
+    beq  a3_done
+
+    mov  r7, r4
 
 char_loop:
+    ldrb r0, [r7]
     cmp  r0, #0
-    beq  repeat_finished    
+    beq  repeat_finished
 
-    sub  r0, r0, #'0'       
-    bl   BSP_LED_Toggle    
+    sub  r0, r0, #'0'
+    and  r0, r0, #7
+    bl   BSP_LED_Toggle
 
-    add  r8, r8, #1         
-    mov  r0, r5                         
+    add  r8, r8, #1
 
-    add  r7, r7, #1            
+    mov  r0, r5
+    bl   busy_delay
+
+    bl   BSP_PB_GetState
+    cmp  r0, #1
+    beq  a3_done
+
+    add  r7, r7, #1
     b    char_loop
 
 repeat_finished:
-    sub  r6, r6, #1          
-    b    repeat_loop         
+    sub  r6, r6, #1
+    b    repeat_loop
 
 a3_done:
-    mov  r0, r8              
+    mov  r0, r8
     pop  {r4, r5, r6, r7, r8, lr}
     bx   lr
 
-    .size nkarimi0397_a3, .-nkarimi0397_a3
+.size nkarimi0397_a3, .-nkarimi0397_a3
 
 @ Here is the actual function. DO NOT MODIFY THIS FUNCTION
 busy_delay:
