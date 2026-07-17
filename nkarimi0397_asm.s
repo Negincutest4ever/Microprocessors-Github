@@ -114,17 +114,48 @@ nkarimi0397_lab7:
 @ Returns: r0
 @ 
 
-@ Here is the function
-nkarimi0397_a3:
-
-    bx lr
-    .size   nkarimi0397_a3, .-nkarimi0397_a3
-
-@ Function Declaration: int busy_delay(int cycles)
+@ Function Declaration: int nkarimi0397_a3(int delay, char *pattern_ptr, int num)
 @
-@ Input: r0 (i.e. r0 is how many cycles to delay)
-@ Returns: r0
-@ 
+@ Input:   r0 = delay value, passed unscaled directly to busy_delay
+@          r1 = pointer to first character of the pattern string (null-terminated)
+@          r2 = maximum number of full pattern repeats before stopping
+@ Returns: r0 = total number of times BSP_LED_Toggle was called
+@
+nkarimi0397_a3:
+    push {r4, r5, r6, r7, r8, lr}  
+                                  
+
+    mov  r5, r0            
+    mov  r6, r2             
+    mov  r8, #0             
+
+repeat_loop:
+    cmp  r6, #0
+    beq  a3_done            
+
+char_loop:
+    cmp  r0, #0
+    beq  repeat_finished    
+
+    sub  r0, r0, #'0'       
+    bl   BSP_LED_Toggle    
+
+    add  r8, r8, #1         
+    mov  r0, r5                         
+
+    add  r7, r7, #1            
+    b    char_loop
+
+repeat_finished:
+    sub  r6, r6, #1          
+    b    repeat_loop         
+
+a3_done:
+    mov  r0, r8              
+    pop  {r4, r5, r6, r7, r8, lr}
+    bx   lr
+
+    .size nkarimi0397_a3, .-nkarimi0397_a3
 
 @ Here is the actual function. DO NOT MODIFY THIS FUNCTION
 busy_delay:
