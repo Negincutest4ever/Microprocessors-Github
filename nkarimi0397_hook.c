@@ -40,7 +40,7 @@ void Lab6_nkarimi0397(int action)
 
 ADD_CMD("nkarimi0397_lab6", Lab6_nkarimi0397,"Test the new lab 6 function")
 
-int nkarimi0397_a3(char *pattern_ptr);
+int nkarimi0397_a3(int delay, char *pattern_ptr, int num);
 
 void A3_nkarimi0397(int action)
 {
@@ -55,16 +55,35 @@ void A3_nkarimi0397(int action)
   }
 
   int fetch_status;
+  uint32_t wait;
+  uint32_t num;
   char *pattern;
 
+  fetch_status = fetch_uint32_arg(&wait);
+  if(fetch_status) {
+    // Default fallback if the user didn't provide a argument
+    wait = 0xFFFFEF; 
+  }
+
   fetch_status = fetch_string_arg(&pattern);
+  if(fetch_status) {
+    // Default fallback if the user didn't provide a argument
+    pattern = "Negin"; 
+  }
+
+  fetch_status = fetch_uint32_arg(&num);
+  if(fetch_status) {
+    // Default fallback if the user didn't provide a argument
+    num = 5; 
+  }
+
 
   if (fetch_status) {
     // Default logic goes here
     pattern = "Test Pattern";
   }
 
-  printf("nkarimi0397_a3 returned: %d\n", nkarimi0397_a3(pattern) );
+  printf("nkarimi0397_a3 returned: %d\n", nkarimi0397_a3(wait, pattern, num) );
 }
 
 ADD_CMD("nkarimi0397_a3", A3_nkarimi0397,"Run A3 for nkarimi0397")
