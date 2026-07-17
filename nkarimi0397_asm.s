@@ -123,46 +123,46 @@ nkarimi0397_lab7:
 @
 
 nkarimi0397_a3:
-    push {r4, r5, r6, r7, r8, lr}
+    push {r4, r5, r6, r7, r8, lr}   @ save regs we're about to use
 
-    mov  r5, r0
-    mov  r4, r1
-    mov  r6, r2
-    mov  r8, #0
+    mov  r5, r0             @ r5 = delay
+    mov  r4, r1             @ r4 = pattern start (don't lose this)
+    mov  r6, r2             @ r6 = repeats left
+    mov  r8, #0             @ r8 = toggle count so far
 
 repeat_loop:
     cmp  r6, #0
-    beq  a3_done
+    beq  a3_done            @ no repeats left, stop
 
-    mov  r7, r4
+    mov  r7, r4             @ r7 = pointer, back to start of pattern
 
 char_loop:
-    ldrb r0, [r7]
+    ldrb r0, [r7]           @ get current character
     cmp  r0, #0
-    beq  repeat_finished
+    beq  repeat_finished    @ end of string, this repeat is done
 
-    sub  r0, r0, #'0'
-    and  r0, r0, #7
-    bl   BSP_LED_Toggle
+    sub  r0, r0, #'0'       @ turn character into a number
+    and  r0, r0, #7         @ keep it a valid LED number (0-7)
+    bl   BSP_LED_Toggle     @ toggle that LED
 
-    add  r8, r8, #1
+    add  r8, r8, #1         @ count it
 
-    mov  r0, r5
-    bl   busy_delay
+    mov  r0, r5              @ pass delay value
+    bl   busy_delay          @ wait
 
-    bl   BSP_PB_GetState
+    bl   BSP_PB_GetState     @ check the button
     cmp  r0, #1
-    beq  a3_done
+    beq  a3_done              @ pressed, stop now
 
-    add  r7, r7, #1
+    add  r7, r7, #1            @ next character
     b    char_loop
 
 repeat_finished:
-    sub  r6, r6, #1
+    sub  r6, r6, #1          @ one repeat used up
     b    repeat_loop
 
 a3_done:
-    mov  r0, r8
+    mov  r0, r8              @ return the count
     pop  {r4, r5, r6, r7, r8, lr}
     bx   lr
 
