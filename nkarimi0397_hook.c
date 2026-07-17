@@ -68,19 +68,13 @@ void A3_nkarimi0397(int action)
   fetch_status = fetch_string_arg(&pattern);
   if(fetch_status) {
     // Default fallback if the user didn't provide a argument
-    pattern = "Negin"; 
+    pattern = "12340"; 
   }
 
   fetch_status = fetch_uint32_arg(&num);
   if(fetch_status) {
     // Default fallback if the user didn't provide a argument
     num = 5; 
-  }
-
-
-  if (fetch_status) {
-    // Default logic goes here
-    pattern = "Test Pattern";
   }
 
   printf("nkarimi0397_a3 returned: %d\n", nkarimi0397_a3(wait, pattern, num) );

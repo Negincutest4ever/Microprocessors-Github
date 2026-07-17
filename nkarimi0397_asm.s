@@ -141,7 +141,7 @@ char_loop:
     bl   BSP_LED_Toggle    
 
     add  r8, r8, #1         
-    mov  r0, r5                         @s
+    mov  r0, r5                         
 
     add  r7, r7, #1            
     b    char_loop
