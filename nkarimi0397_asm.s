@@ -1,4 +1,7 @@
-@ Test code for my own new function called from C
+@ Assembly File - Lab 8 Version
+@
+@ NOTE THERE IS A DATA SECTION AT THE END OF THIS FILE FOR ASSIGNMENT 4
+@ USE THAT DATA SECTION FOR ANY DATA YOU NEED, DO NOT ADD ANOTHER.
 
 @ This is a comment. Anything after an @ symbol is ignored.
 @@ This is also a comment. Some people use double @@ symbols. 
@@ -17,156 +20,159 @@
     .syntax unified         @ Sets the instruction set to the new unified ARM + THUMB
                             @ instructions. The default is divided (separate instruction sets)
 
-    .global nkarimi0397_lab6        @ Make the symbol name for the function visible to the linker
+    .global jsmith1234_lab8        @ Make the symbol name for the function visible to the linker
 
     .code   16              @ 16bit THUMB code (BOTH .code and .thumb_func are required)
     .thumb_func             @ Specifies that the following symbol is the name of a THUMB
                             @ encoded function. Necessary for interlinking between ARM and THUMB code.
 
-    .type   nkarimi0397_lab6, %function   @ Declares that the symbol is a function (not strictly required)
+    .type   jsmith1234_lab8, %function   @ Declares that the symbol is a function (not strictly required)
 
-@ Function Declaration : int nkarimi0397_lab6(int x, int y)
+@ Function Declaration : void jsmith1234_lab8(void)
 @
-@ Input: r0, r1 (i.e. r0 holds x, r1 holds y)
-@ Returns: r0
+@ Input: none
+@ Returns: nothing
 @ 
 
-@ Here is the actual nkarimi0397_lab6 function
-nkarimi0397_lab6:
-        push {r4, r5, r6, lr}    @ save callee-saved regs + lr
-
-        mov  r5, r0              @ r5 = delay value from caller
-        mov  r4, #7              @ r4 = loop index, start at 7
-        mov  r6, #0              @ r6 = toggle counter, start at 0
-
-    loop_top:
-        cmp  r4, #0
-        bge  no_reset            @ if index >= 0, skip reset
-        mov  r4, #7              @ else reset index to 7
-
-    no_reset:
-        mov  r0, r4
-        bl   BSP_LED_Toggle      @ toggle LED at current index
-
-        add  r6, r6, #1          @ toggle counter++
-
-        sub  r4, r4, #1          @ decrement loop index
-
-        mov  r0, r5
-        bl   busy_delay          @ delay for user-specified amount
-
-        bl   BSP_PB_GetState     @ check button state -> r0
-        cmp  r0, #1              @ 1 = pressed (adjust if your BSP is inverted)
-        beq  loop_done
-
-        b    loop_top
-
-    loop_done:
-        mov  r0, r6              @ return toggle counter
-        pop  {r4, r5, r6, lr}
-        bx   lr
-
-    .size   nkarimi0397_lab6, .-nkarimi0397_lab6    @@ - symbol size (not strictly required, but makes the debugger happy)
-
-
-@@ Function Header Block
-
-.global nkarimi0397_lab7
- 
-@ Make the symbol name for the function visible to the linker
-
-.type nkarimi0397_lab7, %function
- 
-@ Declares that the symbol is a function (not strictly required)
-
-@ Function Declaration : int nkarimi0397_lab7(int delay)
-@
-@ Input: r0 (r0 holds the delay value)
-@ Returns: r0
-@
-
-nkarimi0397_lab7:
-
+@ Here is the actual jsmith1234_lab8 function
+jsmith1234_lab8:
     push {lr}
 
-    @ r0 already contains the delay value passed by the caller,
-    @ so we can call busy_delay directly with it
-    bl   busy_delay
+    @ For now, this function just toggles, delays, and toggles again.
+    mov r0, #3
+    bl BSP_LED_Toggle
 
-    @ Get the state of the user button here.
-    @ Return the result to the calling C function
+    ldr r0, =0xFFFFFFF
+    bl busy_delay
+
+    mov r0, #3
+    bl BSP_LED_Toggle
 
     pop {lr}
+    bx lr                           @ Return (Branch eXchange) to the address in the link register (lr) 
+    .size   jsmith1234_lab8, .-jsmith1234_lab8    @@ - symbol size (not strictly required, but makes the debugger happy)
 
-    bx lr
-    @ Return (Branch eXchange) to the address in the link register (lr)
 
-    .size nkarimi0397_lab7, .-nkarimi0397_lab7
- 
-@@ - symbol size (not strictly required)
 
-.global nkarimi0397_a3
-.type   nkarimi0397_a3, %function
 
-@ Function Declaration: int nkarimi0397_a3(char *pattern_ptr)
+.global jsmith1234_a4
+.type   jsmith1234_a4, %function
+
+@ Function Declaration : int jsmith1234_a4(int x)
 @
-@ Input: r0 (i.e. r0 is a pointer to the first character of the pattern)
-@ Returns: r0
+@ Input: Document this
+@ Returns: Document this
 @ 
 
-@ Function Declaration: int nkarimi0397_a3(int delay, char *pattern_ptr, int num)
+@ Here is the actual function
+jsmith1234_a4:
+
+    @ This function only exists to start / initialize your A4
+    @ logic working. No actions should be taken in this logic,
+    @ aside from storing the parameters your A4 logic needs to run.
+
+    @ Store the value we received indicating the running state
+    ldr r1, =a4_is_running
+    str r0, [r1]
+
+    bx lr
+    .size   jsmith1234_a4, .-jsmith1234_a4
+
+
+.global jsmith1234_a4_btn
+.type   jsmith1234_a4_btn, %function
+
+@ Function Declaration : void jsmith1234_a4_btn(void)
 @
-@ Input:   r0 = delay value, passed unscaled directly to busy_delay
-@          r1 = pointer to first character of the pattern string (null-terminated)
-@          r2 = maximum number of full pattern repeats before stopping
-@ Returns: r0 = total number of times BSP_LED_Toggle was called
+@ Input: None
+@ Returns: Nothing
+@ 
+@ Reminder - this requires the button has been initialized as an interrupt
+@ in main.c using BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI)
+@ as well as requires a new function set up void EXTI0_IRQHandler(void)
+
+@ Here is the actual function
+jsmith1234_a4_btn:
+    push {lr}
+
+    ldr r1, =a4_button_count        @ Get the address of the counter
+    ldr r0, [r1]                    @ Get the actual count
+    add r0, r0, #1                  @ Increment the count
+    and r0, #7                      @ Keep the count between 0 and 7
+    str r0, [r1]                    @ Store the new count
+
+    bl BSP_LED_Toggle               @ Toggle the current LED
+
+    pop {lr}
+    bx lr
+    .size   jsmith1234_a4_btn, .-jsmith1234_a4_btn
+
+
+.global jsmith1234_a4_tick
+.type   jsmith1234_a4_tick, %function
+
+@ Function Declaration : void jsmith1234_a4_tick(void)
 @
+@ Input: None
+@ Returns: Nothing
+@ 
 
-nkarimi0397_a3:
-    push {r4, r5, r6, r7, r8, lr}   @ save regs we're about to use
+@ Here is the actual function
+jsmith1234_a4_tick:
+    push {lr}
 
-    mov  r5, r0             @ r5 = delay
-    mov  r4, r1             @ r4 = pattern start (don't lose this)
-    mov  r6, r2             @ r6 = repeats left
-    mov  r8, #0             @ r8 = toggle count so far
+    @ As a starting point, this function implements the basics needed
+    @ to determine if our A4 logic should be running.
+    @
+    @ You will have to add logic here for A4.
 
-repeat_loop:
-    cmp  r6, #0
-    beq  a3_done            @ no repeats left, stop
+    @ Some useful notes
+    @
+    @ BSP_LED_On, BSP_LED_Off - same argument as BSP_LED_Toggle, sets
+    @ the LED to ON or OFF as you tell it
+    @
+    @ How to delay: DO NOT use busy_delay - remember, this is an interrupt
+    @ handler. If you need a delay, use a counter to count how many times
+    @ this function has been called, and use that to skip a desired number
+    @ of calls.
 
-    mov  r7, r4             @ r7 = pointer, back to start of pattern
 
-char_loop:
-    ldrb r0, [r7]           @ get current character
-    cmp  r0, #0
-    beq  repeat_finished    @ end of string, this repeat is done
+    @ ***** Get something
+    ldr r1, =a4_is_running
+    ldr r0, [r1]
 
-    sub  r0, r0, #'0'       @ turn character into a number
-    and  r0, r0, #7         @ keep it a valid LED number (0-7)
-    bl   BSP_LED_Toggle     @ toggle that LED
+    @ ***** Check something
+    cmp r0, #0
+    ble a4_skip
 
-    add  r8, r8, #1         @ count it
+        @ This part below is skipped if A4 is NOT running. You will want to
+        @ keep all your A4 logic inside here.
+        @ DO NOT PUT LOGIC FOR A4 ABOVE THIS LINE -----------------------------
 
-    mov  r0, r5              @ pass delay value
-    bl   busy_delay          @ wait
+        @ Even within this logic, you should still take a philosopy of check
+        @ things, do things, and store things - do not use delays of any sort,
+        @ and only use loops if they are bounded (that is, guaranteed to end)
 
-    bl   BSP_PB_GetState     @ check the button
-    cmp  r0, #1
-    beq  a3_done              @ pressed, stop now
+        @ ***** Do something
+        mov r0, #0
+        bl BSP_LED_Toggle
 
-    add  r7, r7, #1            @ next character
-    b    char_loop
+        @ DO NOT PUT LOGIC FOR A4 BELOW THIS LINE -----------------------------
+        @ End of A4 skipped logic. Do not add logic below here.
 
-repeat_finished:
-    sub  r6, r6, #1          @ one repeat used up
-    b    repeat_loop
+    a4_skip:
 
-a3_done:
-    mov  r0, r8              @ return the count
-    pop  {r4, r5, r6, r7, r8, lr}
-    bx   lr
+    @ ***** End of our tick function
+    pop {lr}
+    bx lr
+    .size   jsmith1234_a4_tick, .-jsmith1234_a4_tick
 
-.size nkarimi0397_a3, .-nkarimi0397_a3
+
+@ Function Declaration : int busy_delay(int cycles)
+@
+@ Input: r0 (i.e. r0 is how many cycles to delay)
+@ Returns: r0
+@ 
 
 @ Here is the actual function. DO NOT MODIFY THIS FUNCTION
 busy_delay:
@@ -181,6 +187,13 @@ busy_delay:
 
     pop {r6}
     bx lr               @ Return to calling function
+
+
+@ Here is another data section, we will use it for some key interrupt items
+@ We will put all necessary data for A4 in this block
+.data
+a4_is_running: .word 0
+a4_button_count: .word 0
 
 
 @ Assembly file ended by single .end directive on its own line
