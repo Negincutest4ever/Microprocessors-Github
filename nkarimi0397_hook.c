@@ -1,7 +1,7 @@
 /*
  *  C to assembler menu hook - Lab 8 Version
  *
- *  Modified by jsmith1234
+ *  Modified by nkarimi0397
  * 
  */
 
@@ -15,16 +15,16 @@
 
 #define N 500
 
-// A4 Interrupt Handlers - these are in jsmith1234_asm.s
-void jsmith1234_a4_btn(void);
-void jsmith1234_a4_tick(void);
+// A4 Interrupt Handlers - these are in nkarimi0397_asm.s
+void nkarimi0397_a4_btn(void);
+void nkarimi0397_a4_tick(void);
 
 
 // Timer tick hook for our timer interrupt
 // driven programming.
 //
 // Note that for now, this function toggles LED 0 every N cycles.
-void jsmith1234_tick(void)
+void nkarimi0397_tick(void)
 {
   // Our tick variable is static so that it keeps its value from one
   // function call to the next.
@@ -45,7 +45,7 @@ void jsmith1234_tick(void)
   if (ticks > N)
   {
     ticks = 0;
-    jsmith1234_a4_tick();
+    nkarimi0397_a4_tick();
   }
 
 
@@ -55,41 +55,41 @@ void jsmith1234_tick(void)
 // driven programming.
 //
 // Note that for now, this function toggles LED 6 when the button is pressed.
-void jsmith1234_btn(void)
+void nkarimi0397_btn(void)
 {
   // For now, just toggle an LED to prove the button press was noticed.
-  jsmith1234_a4_btn();
+  nkarimi0397_a4_btn();
 }
 
-int jsmith1234_lab8(void);
+int nkarimi0397_lab8(void);
 
-void Lab8_jsmith1234(int action)
+void Lab8_nkarimi0397(int action)
 {
 
   if(action==CMD_SHORT_HELP) return;
   if(action==CMD_LONG_HELP) {
     printf("Lab 8\n\n"
-	   "This command tests new lab 8 function by jsmith1234\n"
+	   "This command tests new lab 8 function by nkarimi0397\n"
 	   );
 
     return;
   }
 
 
-  printf("jsmith1234_lab8 returned: %d\n", jsmith1234_lab8() );
+  printf("nkarimi0397_lab8 returned: %d\n", nkarimi0397_lab8() );
 }
 
-ADD_CMD("jsmith1234_lab8", Lab8_jsmith1234,"Test the new lab 8 function")
+ADD_CMD("nkarimi0397_lab8", Lab8_nkarimi0397,"Test the new lab 8 function")
 
-int jsmith1234_a4(int x);
+int nkarimi0397_a4(int x);
 
-void A4_jsmith1234(int action)
+void A4_nkarimi0397(int action)
 {
 
   if(action==CMD_SHORT_HELP) return;
   if(action==CMD_LONG_HELP) {
     printf("Assignment 4 Test\n\n"
-	   "This command tests new A4 function by jsmith1234\n"
+	   "This command tests new A4 function by nkarimi0397\n"
 	   );
 
     return;
@@ -105,9 +105,34 @@ void A4_jsmith1234(int action)
   }
 
 
-  printf("jsmith1234_a4 returned: %d\n", jsmith1234_a4(a4_start) );
+  printf("nkarimi0397_a4 returned: %d\n", nkarimi0397_a4(a4_start) );
 }
 
-ADD_CMD("jsmith1234_a4", A4_jsmith1234,"Test the A4 function")
+ADD_CMD("nkarimi0397_a4", A4_nkarimi0397,"Test the A4 function")
 
+int nkarimi0397_lab9(void)
+
+void Lab9_nkarimi0397(int action)
+
+{
+
+if(action==CMD_SHORT_HELP) return;
+
+if(action==CMD_LONG_HELP) {
+
+printf("Lab 9\n\n"
+
+"This command tests new lab 9 function by nkarimi0397\n"
+
+);
+
+return;
+
+}
+
+printf("nkarimi0397_lab9 returned: %d\n", nkarimi0397_lab9() );
+
+}
+
+ADD_CMD("nkarimi0397_lab9", Lab9_nkarimi0397,"Test the new lab 9 function")
 

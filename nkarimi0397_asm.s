@@ -20,22 +20,22 @@
     .syntax unified         @ Sets the instruction set to the new unified ARM + THUMB
                             @ instructions. The default is divided (separate instruction sets)
 
-    .global jsmith1234_lab8        @ Make the symbol name for the function visible to the linker
+    .global nkarimi0397_lab8        @ Make the symbol name for the function visible to the linker
 
     .code   16              @ 16bit THUMB code (BOTH .code and .thumb_func are required)
     .thumb_func             @ Specifies that the following symbol is the name of a THUMB
                             @ encoded function. Necessary for interlinking between ARM and THUMB code.
 
-    .type   jsmith1234_lab8, %function   @ Declares that the symbol is a function (not strictly required)
+    .type   nkarimi0397_lab8, %function   @ Declares that the symbol is a function (not strictly required)
 
-@ Function Declaration : void jsmith1234_lab8(void)
+@ Function Declaration : void nkarimi0397_lab8(void)
 @
 @ Input: none
 @ Returns: nothing
 @ 
 
-@ Here is the actual jsmith1234_lab8 function
-jsmith1234_lab8:
+@ Here is the actual nkarimi0397_lab8 function
+nkarimi0397_lab8:
     push {lr}
 
     @ For now, this function just toggles, delays, and toggles again.
@@ -50,22 +50,22 @@ jsmith1234_lab8:
 
     pop {lr}
     bx lr                           @ Return (Branch eXchange) to the address in the link register (lr) 
-    .size   jsmith1234_lab8, .-jsmith1234_lab8    @@ - symbol size (not strictly required, but makes the debugger happy)
+    .size   nkarimi0397_lab8, .-nkarimi0397_lab8    @@ - symbol size (not strictly required, but makes the debugger happy)
 
 
 
 
-.global jsmith1234_a4
-.type   jsmith1234_a4, %function
+.global nkarimi0397_a4
+.type   nkarimi0397_a4, %function
 
-@ Function Declaration : int jsmith1234_a4(int x)
+@ Function Declaration : int nkarimi0397_a4(int x)
 @
 @ Input: Document this
 @ Returns: Document this
 @ 
 
 @ Here is the actual function
-jsmith1234_a4:
+nkarimi0397_a4:
 
     @ This function only exists to start / initialize your A4
     @ logic working. No actions should be taken in this logic,
@@ -76,13 +76,13 @@ jsmith1234_a4:
     str r0, [r1]
 
     bx lr
-    .size   jsmith1234_a4, .-jsmith1234_a4
+    .size   nkarimi0397_a4, .-nkarimi0397_a4
 
 
-.global jsmith1234_a4_btn
-.type   jsmith1234_a4_btn, %function
+.global nkarimi0397_a4_btn
+.type   nkarimi0397_a4_btn, %function
 
-@ Function Declaration : void jsmith1234_a4_btn(void)
+@ Function Declaration : void nkarimi0397_a4_btn(void)
 @
 @ Input: None
 @ Returns: Nothing
@@ -92,7 +92,7 @@ jsmith1234_a4:
 @ as well as requires a new function set up void EXTI0_IRQHandler(void)
 
 @ Here is the actual function
-jsmith1234_a4_btn:
+nkarimi0397_a4_btn:
     push {lr}
 
     ldr r1, =a4_button_count        @ Get the address of the counter
@@ -105,20 +105,20 @@ jsmith1234_a4_btn:
 
     pop {lr}
     bx lr
-    .size   jsmith1234_a4_btn, .-jsmith1234_a4_btn
+    .size   nkarimi0397_a4_btn, .-nkarimi0397_a4_btn
 
 
-.global jsmith1234_a4_tick
-.type   jsmith1234_a4_tick, %function
+.global nkarimi0397_a4_tick
+.type   nkarimi0397_a4_tick, %function
 
-@ Function Declaration : void jsmith1234_a4_tick(void)
+@ Function Declaration : void nkarimi0397_a4_tick(void)
 @
 @ Input: None
 @ Returns: Nothing
 @ 
 
 @ Here is the actual function
-jsmith1234_a4_tick:
+nkarimi0397_a4_tick:
     push {lr}
 
     @ As a starting point, this function implements the basics needed
@@ -165,7 +165,53 @@ jsmith1234_a4_tick:
     @ ***** End of our tick function
     pop {lr}
     bx lr
-    .size   jsmith1234_a4_tick, .-jsmith1234_a4_tick
+    .size   nkarimi0397_a4_tick, .-nkarimi0397_a4_tick
+
+    @@ Function Header Block
+
+.global nkarimi0397_lab9
+ 
+@ Make the symbol name for the function visible to the linker
+
+.type
+ 
+nkarimi0397_lab9, %function
+ 
+@ Declares that the symbol is a function (not strictly required)
+
+@ Function Declaration : int nkarimi0397_lab9(void)
+
+@
+
+@ Input: None
+
+@ Returns: r0
+
+@
+
+@ Here is the actual nkarimi0397_lab9 function
+
+nkarimi0397_lab9:
+
+push {lr}
+
+@ These lines just show that the code is working
+
+mov r0, #0
+
+bl BSP_LED_Toggle
+
+pop {lr}
+
+bx lr
+ 
+@ Return (Branch eXchange) to the address in the link register (lr)
+
+.size
+ 
+nkarimi0397_lab9, .-nkarimi0397_lab9
+ 
+@@ - symbol size (not strictly required)
 
 
 @ Function Declaration : int busy_delay(int cycles)
