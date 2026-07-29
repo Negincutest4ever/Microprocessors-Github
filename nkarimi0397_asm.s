@@ -173,9 +173,7 @@ nkarimi0397_a4_tick:
  
 @ Make the symbol name for the function visible to the linker
 
-.type
- 
-nkarimi0397_lab9, %function
+.type nkarimi0397_lab9, %function
  
 @ Declares that the symbol is a function (not strictly required)
 
@@ -192,24 +190,24 @@ nkarimi0397_lab9, %function
 @ Here is the actual nkarimi0397_lab9 function
 
 nkarimi0397_lab9:
+    push {lr}
 
-push {lr}
+    @ GPIOE_BSRR address
+    ldr r0, =0x48001018
 
-@ These lines just show that the code is working
+    @ Turn ON North, East, South, West LEDs
+    @ PE9 | PE11 | PE13 | PE15 = 0xAA00
+    ldr r1, =0x0000AA00
+    str r1, [r0]
 
-mov r0, #0
+    mov r0, #0
 
-bl BSP_LED_Toggle
-
-pop {lr}
-
-bx lr
+    pop {lr}
+    bx lr
  
 @ Return (Branch eXchange) to the address in the link register (lr)
 
-.size
- 
-nkarimi0397_lab9, .-nkarimi0397_lab9
+.size nkarimi0397_lab9, .-nkarimi0397_lab9
  
 @@ - symbol size (not strictly required)
 

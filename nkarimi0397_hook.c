@@ -110,13 +110,10 @@ void A4_nkarimi0397(int action)
 
 ADD_CMD("nkarimi0397_a4", A4_nkarimi0397,"Test the A4 function")
 
-int nkarimi0397_lab9(void)
+int nkarimi0397_lab9(void);
 
 void Lab9_nkarimi0397(int action)
-
-{
-
-if(action==CMD_SHORT_HELP) return;
+{ if(action==CMD_SHORT_HELP) return;
 
 if(action==CMD_LONG_HELP) {
 
@@ -134,5 +131,5 @@ printf("nkarimi0397_lab9 returned: %d\n", nkarimi0397_lab9() );
 
 }
 
-ADD_CMD("nkarimi0397_lab9", Lab9_nkarimi0397,"Test the new lab 9 function")
+ADD_CMD("nkarimi0397_lab9", Lab9_nkarimi0397,"Test the new lab 9 function");
 
