@@ -190,14 +190,20 @@ nkarimi0397_a4_tick:
 @ Here is the actual nkarimi0397_lab9 function
 
 nkarimi0397_lab9:
+    nkarimi0397_lab9:
     push {lr}
 
-    @ GPIOE_BSRR address
-    ldr r0, =0x48001018
+    @ GPIOE_ODR address
+    ldr r0, =0x48001014
 
-    @ Turn ON North, East, South, West LEDs
+    @ Read current output state
+    ldr r1, [r0]
+
+    @ Toggle North, East, South, West LEDs
     @ PE9 | PE11 | PE13 | PE15 = 0xAA00
-    ldr r1, =0x0000AA00
+    eor r1, r1, #0xAA00
+
+    @ Write new output state
     str r1, [r0]
 
     mov r0, #0
