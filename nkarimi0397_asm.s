@@ -4,10 +4,10 @@
 @ USE THAT DATA SECTION FOR ANY DATA YOU NEED, DO NOT ADD ANOTHER.
 
 @ This is a comment. Anything after an @ symbol is ignored.
-@@ This is also a comment. Some people use double @@ symbols. 
+@@ This is also a comment. Some people use double @@ symbols.
 
 
-    .code   16              @ This directive selects the instruction set being generated. 
+    .code   16              @ This directive selects the instruction set being generated.
                             @ The value 16 selects Thumb, with the value 32 selecting ARM.
 
     .text                   @ Tell the assembler that the upcoming section is to be considered
@@ -29,10 +29,9 @@
     .type   nkarimi0397_lab8, %function   @ Declares that the symbol is a function (not strictly required)
 
 @ Function Declaration : void nkarimi0397_lab8(void)
-@
-@ Input: none
+@Input: none
 @ Returns: nothing
-@ 
+@
 
 @ Here is the actual nkarimi0397_lab8 function
 nkarimi0397_lab8:
@@ -45,11 +44,11 @@ nkarimi0397_lab8:
     ldr r0, =0xFFFFFFF
     bl busy_delay
 
-    mov r0, #3
+    mov r0, #3@
     bl BSP_LED_Toggle
 
     pop {lr}
-    bx lr                           @ Return (Branch eXchange) to the address in the link register (lr) 
+    bx lr                           @ Return (Branch eXchange) to the address in the link register (lr)
     .size   nkarimi0397_lab8, .-nkarimi0397_lab8    @@ - symbol size (not strictly required, but makes the debugger happy)
 
 
@@ -57,24 +56,70 @@ nkarimi0397_lab8:
 
 .global nkarimi0397_a4
 .type   nkarimi0397_a4, %function
-
-@ Function Declaration : int nkarimi0397_a4(int x)
+@ Function Declaration : int nkarimi0397_a4(int status, int num_to_skip, int direction)
 @
-@ Input: Document this
-@ Returns: Document this
-@ 
+@ Input:
+@   r0 = status      -> greater than zero means "run", zero or negative means "stop"
+@   r1 = num_to_skip -> number of tick calls to skip between taking an action
+@   r2 = direction   -> +1 to count up through LEDs, -1 to count down,
+@                        0 means "leave the direction unchanged"
+@ Returns: r0 = 0 (always succeeds)
+@
+@ This function is called from the menu each time the user runs the A4 command.
+@ It stores the parameters supplied by the user into memory so that the tick
+@ function (called from the timer interrupt) can use them later. If the
+@ status indicates the game should start running, all 8 LEDs are cleared
+@ so we start from a known, consistent state.
 
 @ Here is the actual function
 nkarimi0397_a4:
+    push {r4, r5, r6, r7, lr}       @ Save callee-saved regs we use, and lr for our bl calls
 
-    @ This function only exists to start / initialize your A4
-    @ logic working. No actions should be taken in this logic,
-    @ aside from storing the parameters your A4 logic needs to run.
+    mov r4, r0                      @ r4 = status (keep across the BSP_LED_Off calls below)
+    mov r5, r1                      @ r5 = num_to_skip
+    mov r6, r2                      @ r6 = direction
 
     @ Store the value we received indicating the running state
     ldr r1, =a4_is_running
+    str r4, [r1]
+
+    @ Store how many ticks to skip between actions
+    ldr r1, =a4_num_to_skip
+    str r5, [r1]
+
+    @ Only overwrite the stored direction if the user passed a non-zero value
+    cmp     r6, #0
+    beq     a4_skip_direction_update
+        ldr r1, =a4_direction
+        str r6, [r1]
+    a4_skip_direction_update:
+
+    @ Reset the skip counter so the new settings start "fresh"
+    ldr r1, =a4_skip_count
+    mov r0, #0
     str r0, [r1]
 
+    @ Reset the current LED index back to LED 0
+    ldr r1, =a4_current_led
+    mov r0, #0
+    str r0, [r1]
+
+    @ If we are starting the game (status > 0), turn off all 8 LEDs first
+    cmp     r4, #0
+    ble     a4_init_done
+
+        mov r7, #0                  @ r7 = LED index for the clear loop
+        a4_led_off_loop:
+            mov r0, r7
+            bl  BSP_LED_Off
+            add r7, r7, #1
+            cmp r7, #8
+            blt a4_led_off_loop
+
+    a4_init_done:
+
+    mov r0, #0                      @ Return success
+    pop {r4, r5, r6, r7, lr}
     bx lr
     .size   nkarimi0397_a4, .-nkarimi0397_a4
 
@@ -86,7 +131,7 @@ nkarimi0397_a4:
 @
 @ Input: None
 @ Returns: Nothing
-@ 
+@
 @ Reminder - this requires the button has been initialized as an interrupt
 @ in main.c using BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI)
 @ as well as requires a new function set up void EXTI0_IRQHandler(void)
@@ -106,8 +151,6 @@ nkarimi0397_a4_btn:
     pop {lr}
     bx lr
     .size   nkarimi0397_a4_btn, .-nkarimi0397_a4_btn
-
-
 .global nkarimi0397_a4_tick
 .type   nkarimi0397_a4_tick, %function
 
@@ -115,27 +158,16 @@ nkarimi0397_a4_btn:
 @
 @ Input: None
 @ Returns: Nothing
-@ 
+@
+@ Called repeatedly from the timer interrupt. Each call represents one
+@ "tick". If A4 is running, we count ticks until we reach num_to_skip,
+@ then we take a single action (toggle the current LED and move to the
+@ next one according to the stored direction) and start counting again.
+@ If A4 is not running, this function does nothing.
 
 @ Here is the actual function
 nkarimi0397_a4_tick:
-    push {lr}
-
-    @ As a starting point, this function implements the basics needed
-    @ to determine if our A4 logic should be running.
-    @
-    @ You will have to add logic here for A4.
-
-    @ Some useful notes
-    @
-    @ BSP_LED_On, BSP_LED_Off - same argument as BSP_LED_Toggle, sets
-    @ the LED to ON or OFF as you tell it
-    @
-    @ How to delay: DO NOT use busy_delay - remember, this is an interrupt
-    @ handler. If you need a delay, use a counter to count how many times
-    @ this function has been called, and use that to skip a desired number
-    @ of calls.
-
+    push {r4, r5, lr}
 
     @ ***** Get something
     ldr r1, =a4_is_running
@@ -153,9 +185,40 @@ nkarimi0397_a4_tick:
         @ things, do things, and store things - do not use delays of any sort,
         @ and only use loops if they are bounded (that is, guaranteed to end)
 
-        @ ***** Do something
-        mov r0, #0
-        bl BSP_LED_Toggle
+        @ ***** Check if it is time to act, or if we should keep waiting
+        ldr r1, =a4_skip_count
+        ldr r0, [r1]                @ r0 = current skip count
+        ldr r2, =a4_num_to_skip
+        ldr r3, [r2]                 @ r3 = number of ticks we need to skip
+
+        cmp r0, r3
+        blt a4_tick_wait             @ Not yet time to act - just count this tick
+
+            @ ***** Do something - it is time to act, reset the skip counter
+            mov r0, #0
+            str r0, [r1]
+
+            @ Toggle the LED at our current index
+            ldr r4, =a4_current_led
+            ldr r0, [r4]
+            bl  BSP_LED_Toggle
+
+            @ ***** Store something - move to the next LED index
+            ldr r5, =a4_direction
+            ldr r1, [r5]             @ r1 = +1 or -1
+            ldr r0, [r4]             @ r0 = current LED index
+            add r0, r0, r1           @ Move index one step in the chosen direction
+            and r0, r0, #7           @ Wrap the index so it stays between 0 and 7
+            str r0, [r4]
+
+            b a4_tick_done
+
+        a4_tick_wait:
+            @ Not time to act yet - just increment the skip counter and wait
+            add r0, r0, #1
+            str r0, [r1]
+
+        a4_tick_done:
 
         @ DO NOT PUT LOGIC FOR A4 BELOW THIS LINE -----------------------------
         @ End of A4 skipped logic. Do not add logic below here.
@@ -163,7 +226,7 @@ nkarimi0397_a4_tick:
     a4_skip:
 
     @ ***** End of our tick function
-    pop {lr}
+    pop {r4, r5, lr}
     bx lr
     .size   nkarimi0397_a4_tick, .-nkarimi0397_a4_tick
 
@@ -174,8 +237,7 @@ nkarimi0397_a4_tick:
 @ Make the symbol name for the function visible to the linker
 
 .type nkarimi0397_lab9, %function
- 
-@ Declares that the symbol is a function (not strictly required)
+  Declares that the symbol is a function (not strictly required)
 
 @ Function Declaration : int nkarimi0397_lab9(void)
 
@@ -222,7 +284,7 @@ nkarimi0397_lab9:
 @
 @ Input: r0 (i.e. r0 is how many cycles to delay)
 @ Returns: r0
-@ 
+@
 
 @ Here is the actual function. DO NOT MODIFY THIS FUNCTION
 busy_delay:
@@ -244,9 +306,11 @@ busy_delay:
 .data
 a4_is_running: .word 0
 a4_button_count: .word 0
+a4_num_to_skip: .word 0        @ How many ticks to skip between actions
+a4_direction: .word 1          @ +1 = count up, -1 = count down (default: up)
+a4_current_led: .word 0        @ Index (0-7) of the LED we are currently on
+a4_skip_count: .word 0         @ How many ticks have elapsed since our last action
 
 
 @ Assembly file ended by single .end directive on its own line
 .end
-
-Things past the end directive are not processed, as you can see here.

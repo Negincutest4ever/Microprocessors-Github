@@ -1,135 +1,151 @@
 /*
- *  C to assembler menu hook - Lab 8 Version
- *
- *  Modified by nkarimi0397
- * 
+ * nkarimi0397_hook.c
  */
 
 #include <stdio.h>
 #include <stdint.h>
 #include <ctype.h>
 
-#include "stm32f3_discovery_gyroscope.h"
-
 #include "common.h"
 
-#define N 500
+int nkarimi0397_add_test(int x, int y, int delay);
 
-// A4 Interrupt Handlers - these are in nkarimi0397_asm.s
-void nkarimi0397_a4_btn(void);
-void nkarimi0397_a4_tick(void);
+int nkarimi0397_string_test(char *p);
 
+int nkarimi0397_a2(int num, int wait);
 
-// Timer tick hook for our timer interrupt
-// driven programming.
-//
-// Note that for now, this function toggles LED 0 every N cycles.
-void nkarimi0397_tick(void)
+int nkarimi0397_a4(int status, int num_to_skip, int direction);
+
+void _nkarimi0397_Assignment2(int action)
 {
-  // Our tick variable is static so that it keeps its value from one
-  // function call to the next.
-  //
-  // If this was not static, this would not work because ticks would
-  // get reinitialized every time the function was called.
-  static int32_t ticks;
-  
-  // Increment our tick count every time the timer interrupt fires.
-  // Can you measure approximately how fast the tick is running? Try
-  // timing how long it takes for the LED to blink 10 times.
-  ticks++;
-
-  // Every time we reach N cycles, reset the tick count to zero
-  // and toggle LED 0.
-  //
-  // This proves to us that our interrupt is working.
-  if (ticks > N)
-  {
-    ticks = 0;
-    nkarimi0397_a4_tick();
-  }
-
-
-}
-
-// Button press hook for our button interrupt
-// driven programming.
-//
-// Note that for now, this function toggles LED 6 when the button is pressed.
-void nkarimi0397_btn(void)
-{
-  // For now, just toggle an LED to prove the button press was noticed.
-  nkarimi0397_a4_btn();
-}
-
-int nkarimi0397_lab8(void);
-
-void Lab8_nkarimi0397(int action)
-{
-
-  if(action==CMD_SHORT_HELP) return;
-  if(action==CMD_LONG_HELP) {
-    printf("Lab 8\n\n"
-	   "This command tests new lab 8 function by nkarimi0397\n"
-	   );
-
+  if(action == CMD_SHORT_HELP) return;
+  if(action == CMD_LONG_HELP) {
+    printf("Assignment 2\n\n"
+           "Usage: nkarimi0397_a2 <num> <wait>\n"
+           "  num  = number of loop cycles (loops through all 8 LEDs)\n"
+           "  wait = delay value passed to busy_delay\n");
     return;
+  }uint32_t user_num;
+  uint32_t user_wait;
+  int fetch_status;
+
+  fetch_status = fetch_uint32_arg(&user_num);
+  if(fetch_status) {
+    // Default fallback if the user didn't provide a first argument
+    user_num = 3; 
   }
 
+  fetch_status = fetch_uint32_arg(&user_wait);
+  if(fetch_status) {
+    // Default fallback if the user didn't provide a second argument
+    user_wait = 0xFFFFEF; 
+  }
 
-  printf("nkarimi0397_lab8 returned: %d\n", nkarimi0397_lab8() );
+  int total_toggles = nkarimi0397_a2(user_num, user_wait);
+
+  printf("nkarimi0397_a2 returned: %d\n", total_toggles);
 }
 
-ADD_CMD("nkarimi0397_lab8", Lab8_nkarimi0397,"Test the new lab 8 function")
+ADD_CMD("nkarimi0397_a2", _nkarimi0397_Assignment2, "Assignment 2")
 
-int nkarimi0397_a4(int x);
 
-void A4_nkarimi0397(int action)
+void nkarimi0397_StringTest(int action)
 {
 
   if(action==CMD_SHORT_HELP) return;
   if(action==CMD_LONG_HELP) {
-    printf("Assignment 4 Test\n\n"
-	   "This command tests new A4 function by nkarimi0397\n"
-	   );
+    printf("String Test\n\n"
+  "This command tests new string function by nkarimi0397\n"
+  );
 
     return;
   }
 
   int fetch_status;
-  uint32_t a4_start;
+  char *destptr;
 
-  fetch_status = fetch_uint32_arg(&a4_start);
+  fetch_status = fetch_string_arg(&destptr);
 
   if (fetch_status) {
-    a4_start = 1;
+    // Default logic goes here
   }
 
-
-  printf("nkarimi0397_a4 returned: %d\n", nkarimi0397_a4(a4_start) );
+  printf("string_test returned: %d\n", nkarimi0397_string_test(destptr) );
 }
 
-ADD_CMD("nkarimi0397_a4", A4_nkarimi0397,"Test the A4 function")
+ADD_CMD("nkarimi0397_string", nkarimi0397_StringTest,"Test the new string function")
 
-int nkarimi0397_lab9(void);
+void AddTest(int action)
+{
 
-void Lab9_nkarimi0397(int action)
-{ if(action==CMD_SHORT_HELP) return;
+  if(action==CMD_SHORT_HELP) return;
+  if(action==CMD_LONG_HELP) {
+    printf("Addition Test\n\n"
+  "This command tests new addition function by jsmith1234\n"
+  );
 
-if(action==CMD_LONG_HELP) {
+    return;
+  }
 
-printf("Lab 9\n\n"
+  uint32_t delay;
 
-"This command tests new lab 9 function by nkarimi0397\n"
+  int fetch_status;
 
-);
+  fetch_status = fetch_uint32_arg(&delay);
 
-return;
+  if(fetch_status) {
+  // Use a default delay value
+  delay = 0xFFFFFF;
+  }
 
+  // When we call our function, pass the delay value.
+  // printf(“<<< here is where we call add_test – can you add a third parameter? >>>”);
+
+  printf("nkarimi0397_add_test returned: %d\n", nkarimi0397_add_test(99, 87, delay) );
 }
 
-printf("nkarimi0397_lab9 returned: %d\n", nkarimi0397_lab9() );
+ADD_CMD("nkarimi0397_add", AddTest,"Test the new add function")
 
+
+void _nkarimi0397_Assignment4(int action)
+{
+  if(action == CMD_SHORT_HELP) return;
+  if(action == CMD_LONG_HELP) {
+    printf("Assignment 4\n\n"
+           "Usage: nkarimi0397_a4 <status> <num_to_skip> <direction>\n"
+           "  status      = >0 starts the LED game, <=0 stops it\n"
+           "  num_to_skip = number of tick calls to skip between actions\n"
+           "  direction   = +1 to count up through the LEDs, -1 to count\n"
+           "                down, 0 to leave the direction unchanged\n");
+    return;
+  }
+
+  uint32_t user_status;
+  uint32_t user_num_to_skip;
+  uint32_t user_direction;
+  int fetch_status;
+
+  fetch_status = fetch_uint32_arg(&user_status);
+  if(fetch_status) {
+    // Default fallback if the user didn't provide a status - start running
+    user_status = 1;
+  }
+
+  fetch_status = fetch_uint32_arg(&user_num_to_skip);
+  if(fetch_status) {
+    // Default fallback if the user didn't provide a skip count
+    user_num_to_skip = 5;
+  }
+
+  fetch_status = fetch_uint32_arg(&user_direction);
+  if(fetch_status) {
+    // Default fallback if the user didn't provide a direction
+    user_direction = 1;
+  }
+
+  int result = nkarimi0397_a4(user_status, user_num_to_skip, user_direction);
+
+  printf("nkarimi0397_a4 returned: %d\n", result);
 }
 
-ADD_CMD("nkarimi0397_lab9", Lab9_nkarimi0397,"Test the new lab 9 function");
-
+ADD_CMD("nkarimi0397_a4", _nkarimi0397_Assignment4, "Assignment 4")
