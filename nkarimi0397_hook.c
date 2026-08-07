@@ -149,3 +149,22 @@ void _nkarimi0397_Assignment4(int action)
 }
 
 ADD_CMD("nkarimi0397_a4", _nkarimi0397_Assignment4, "Assignment 4")
+
+void mes_InitIWDG(int reload);
+void mes_IWDGStart(void);
+void mes_IWDGRefresh(void);
+void Lab10_jsmith1234(int action)
+{
+if(action==CMD_SHORT_HELP) return;
+if(action==CMD_LONG_HELP) {
+printf("Lab 10\n\n"
+"This command tests new lab 8 function by jsmith1234\n"
+);
+return;
+}
+printf("Initializing Watchdog\n");
+mes_InitIWDG(9999);
+printf("Starting Watchdog\n");
+mes_IWDGStart();
+}
+ADD_CMD("jsmith1234_lab10", Lab10_jsmith1234,"Test the new lab 10 function")
