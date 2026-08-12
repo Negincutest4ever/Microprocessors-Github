@@ -126,34 +126,32 @@ nkarimi0397_a4:
 
 .global nkarimi0397_a5
 .type   nkarimi0397_a5, %function
-@ Function Declaration : int nkarimi0397_a5(int status, int num_to_skip, int direction)
+@ Function Declaration : int nkarimi0397_a5(int status, int num_to_skip)
 @
 @ Input:
 @   r0 = status      -> greater than zero means "run", zero or negative means "stop"
 @   r1 = num_to_skip -> number of tick calls to skip between taking an action
-@   r2 = direction   -> +1 to count up through LEDs, -1 to count down,
-@                        0 means "leave the direction unchanged"
 @ Returns: r0 = 0 (always succeeds)
 @
 @ This function is called from the menu each time the user runs the A5 command.
 @ It stores the parameters supplied by the user into memory so that the tick
 @ function (called from the timer interrupt) can use them later. If the
-@ status indicates the game should start running, all 8 LEDs are cleared
-@ so we start from a known, consistent state.
+@ status indicates the game should start running (status > 0), the watchdog
+@ is (re)initialized with a reload of 8000 and started right here, so A5 is
+@ fully self-contained and does not depend on any other command having been
+@ run first.
+@
+@ NOTE: there is no "direction" parameter for A5. Unlike A4, A5 always
+@ toggles the same fixed group of 4 corner LEDs together (see
+@ nkarimi0397_a5_tick) rather than walking a single LED around a ring, so
+@ there is nothing for a direction to control.
 
 @ Here is the actual function
 nkarimi0397_a5:
-    push {r4, r5, r6, r7, lr}       @ Save callee-saved regs we use, and lr for our bl calls
+    push {r4, r5, lr}                @ Save callee-saved regs we use, and lr for our bl calls
 
-    mov r4, r0                      @ r4 = status (keep across the BSP_LED_Off calls below)
-    mov r5, r1                      @ r5 = num_to_skip
-    mov r6, r2                      @ r6 = direction
-
-    @ NOTE: this function no longer starts the watchdog itself. The caller
-    @ (see _nkarimi0397_Assignment5 in the hook file) is responsible for
-    @ confirming the watchdog is already running before it ever calls us -
-    @ that keeps the "is it safe to run" decision, and the warning if it
-    @ isn't, in one place instead of duplicated in assembly.
+    mov r4, r0                       @ r4 = status (keep across the mes_IWDGStart call below)
+    mov r5, r1                       @ r5 = num_to_skip
 
     @ Store the value we received indicating the running state
     ldr r1, =a5_running
@@ -163,39 +161,25 @@ nkarimi0397_a5:
     ldr r1, =a5_num_to_skip
     str r5, [r1]
 
-    @ Only overwrite the stored direction if the user passed a non-zero value
-    cmp     r6, #0
-    beq     a5_skip_direction_update
-        ldr r1, =a5_direction
-        str r6, [r1]
-    a5_skip_direction_update:
-
     @ Reset the skip counter so the new settings start "fresh"
     ldr r1, =a5_skip_count
     mov r0, #0
     str r0, [r1]
 
-    @ Reset the current LED index back to LED 0
-    ldr r1, =a5_current_led
-    mov r0, #0
-    str r0, [r1]
-
-    @ If we are starting the game (status > 0), turn off all 8 LEDs first
+    @ If we are starting (status > 0), initialize and start the watchdog
+    @ ourselves - this is what makes A5 usable without running any other
+    @ command first.
     cmp     r4, #0
-    ble     a5_init_done
+    ble     a5_watchdog_done
 
-        mov r7, #0                  @ r7 = LED index for the clear loop
-        a5_led_off_loop:
-            mov r0, r7
-            bl  BSP_LED_Off
-            add r7, r7, #1
-            cmp r7, #8
-            blt a5_led_off_loop
+        mov r0, #8000
+        bl mes_InitIWDG
+        bl mes_IWDGStart
 
-    a5_init_done:
+    a5_watchdog_done:
 
     mov r0, #0                      @ Return success
-    pop {r4, r5, r6, r7, lr}
+    pop {r4, r5, lr}
     bx lr
     .size   nkarimi0397_a5, .-nkarimi0397_a5
 
@@ -384,9 +368,9 @@ nkarimi0397_a5_tick:
         @ ***** Keep the watchdog fed while A5 is running - unless the
         @ button has been pressed, in which case we deliberately stop
         @ refreshing so the watchdog eventually times out and reboots.
-        @ NOTE: _nkarimi0397_Assignment5 in the hook file refuses to even
-        @ call nkarimi0397_a5 unless the watchdog is already confirmed
-        @ running, so it is safe to refresh here.
+        @ NOTE: nkarimi0397_a5 initializes and starts the watchdog itself
+        @ before this tick function is ever reached, so it is safe to
+        @ refresh here.
         ldr r1, =a5_btn_pressed
         ldr r0, [r1]
         cmp r0, #0
@@ -486,8 +470,6 @@ a4_skip_count: .word 0         @ How many ticks have elapsed since our last acti
 
 a5_running: .word 0            @ 0 = A5 stopped, non-zero = A5 running (used by nkarimi0397_a5_tick)
 a5_num_to_skip: .word 0        @ How many ticks to skip between actions
-a5_direction: .word 1          @ +1 = count up, -1 = count down (default: up)
-a5_current_led: .word 0        @ Index (0-7) of the LED we are currently on
 a5_skip_count: .word 0         @ How many ticks have elapsed since our last action
 a5_btn_pressed: .word 0        @ 0 = button not yet pressed, 1 = pressed (set by nkarimi0397_a5_btn)
 
