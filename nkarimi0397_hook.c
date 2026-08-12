@@ -23,13 +23,13 @@ void mes_IWDGStart(void);
 void mes_IWDGRefresh(void);
 
 // Declare assembly functions in C
-extern void nkarimi0397_a4_btn(void);
+extern void nkarimi0397_a5_btn(void);
 extern void nkarimi0397_a4_tick(void);
 extern void nkarimi0397_a5_tick(void);
 
 // Provide the expected handlers that main.c calls
 void nkarimi0397_btn(void) {
-    nkarimi0397_a4_btn();
+    nkarimi0397_a5_btn();
 }
 
 void nkarimi0397_tick(void) {
