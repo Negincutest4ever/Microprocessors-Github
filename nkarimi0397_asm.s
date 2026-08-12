@@ -124,6 +124,76 @@ nkarimi0397_a4:
     .size   nkarimi0397_a4, .-nkarimi0397_a4
 
 
+.global nkarimi0397_a5
+.type   nkarimi0397_a5, %function
+@ Function Declaration : int nkarimi0397_a5(int status, int num_to_skip, int direction)
+@
+@ Input:
+@   r0 = status      -> greater than zero means "run", zero or negative means "stop"
+@   r1 = num_to_skip -> number of tick calls to skip between taking an action
+@   r2 = direction   -> +1 to count up through LEDs, -1 to count down,
+@                        0 means "leave the direction unchanged"
+@ Returns: r0 = 0 (always succeeds)
+@
+@ This function is called from the menu each time the user runs the A5 command.
+@ It stores the parameters supplied by the user into memory so that the tick
+@ function (called from the timer interrupt) can use them later. If the
+@ status indicates the game should start running, all 8 LEDs are cleared
+@ so we start from a known, consistent state.
+
+@ Here is the actual function
+nkarimi0397_a5:
+    push {r4, r5, r6, r7, lr}       @ Save callee-saved regs we use, and lr for our bl calls
+
+    mov r4, r0                      @ r4 = status (keep across the BSP_LED_Off calls below)
+    mov r5, r1                      @ r5 = num_to_skip
+    mov r6, r2                      @ r6 = direction
+
+    @ Store the value we received indicating the running state
+    ldr r1, =a5_running
+    str r4, [r1]
+
+    @ Store how many ticks to skip between actions
+    ldr r1, =a5_num_to_skip
+    str r5, [r1]
+
+    @ Only overwrite the stored direction if the user passed a non-zero value
+    cmp     r6, #0
+    beq     a5_skip_direction_update
+        ldr r1, =a5_direction
+        str r6, [r1]
+    a5_skip_direction_update:
+
+    @ Reset the skip counter so the new settings start "fresh"
+    ldr r1, =a5_skip_count
+    mov r0, #0
+    str r0, [r1]
+
+    @ Reset the current LED index back to LED 0
+    ldr r1, =a5_current_led
+    mov r0, #0
+    str r0, [r1]
+
+    @ If we are starting the game (status > 0), turn off all 8 LEDs first
+    cmp     r4, #0
+    ble     a5_init_done
+
+        mov r7, #0                  @ r7 = LED index for the clear loop
+        a5_led_off_loop:
+            mov r0, r7
+            bl  BSP_LED_Off
+            add r7, r7, #1
+            cmp r7, #8
+            blt a5_led_off_loop
+
+    a5_init_done:
+
+    mov r0, #0                      @ Return success
+    pop {r4, r5, r6, r7, lr}
+    bx lr
+    .size   nkarimi0397_a5, .-nkarimi0397_a5
+
+
 .global nkarimi0397_a4_btn
 .type   nkarimi0397_a4_btn, %function
 
@@ -230,6 +300,58 @@ nkarimi0397_a4_tick:
     bx lr
     .size   nkarimi0397_a4_tick, .-nkarimi0397_a4_tick
 
+
+.global nkarimi0397_a5_tick
+.type   nkarimi0397_a5_tick, %function
+
+@ Function Declaration : void nkarimi0397_a5_tick(void)
+@
+@ Input: None
+@ Returns: Nothing
+@
+@ Here is the actual function nkarimi0397_a5_tick:
+nkarimi0397_a5_tick:
+    push {lr}
+
+    @ As a starting point, this function implements the basics needed
+    @ to determine if our A5 logic should run or not.
+    @
+    @ You will have to add logic here for A5.
+    @ Some useful notes
+    @
+    @ DO NOT REFRESH THE WATCHDOG WITH mes_IWDGRefresh UNLESS IT
+    @ HAS PREVIOUSLY BEEN STARTED OR YOUR BOARD WILL CRASH
+
+    @ ***** Get something
+    ldr r1, =a5_running
+    ldr r0, [r1]
+
+    @ ***** Check something
+    cmp r0, #0
+    ble a5_skip
+
+        @ This part below is skipped if A5 is NOT running. You will want to
+        @ keep all your A5 logic inside here.
+        @ DO NOT PUT LOGIC FOR A5 ABOVE THIS LINE -----------------------------
+
+        @ Even within this logic, you should still take a philosophy of check
+        @ things, do things, and store things - do not use delays of any sort,
+        @ and only use loops if they are bounded (that is, guaranteed to end)
+
+        @ This is only temporary to test your work
+        mov r0, #0
+        bl BSP_LED_Toggle
+
+        @ DO NOT PUT LOGIC FOR A5 BELOW THIS LINE -----------------------------
+        @ End of A5 skipped logic. Do not add logic below here.
+
+    a5_skip:
+
+    @ ***** Exit
+    pop {lr}
+    bx lr
+    .size   nkarimi0397_a5_tick, .-nkarimi0397_a5_tick
+
     @@ Function Header Block
 
 .global nkarimi0397_lab9
@@ -237,7 +359,6 @@ nkarimi0397_a4_tick:
 @ Make the symbol name for the function visible to the linker
 
 .type nkarimi0397_lab9, %function
-  Declares that the symbol is a function (not strictly required)
 
 @ Function Declaration : int nkarimi0397_lab9(void)
 
@@ -310,6 +431,12 @@ a4_num_to_skip: .word 0        @ How many ticks to skip between actions
 a4_direction: .word 1          @ +1 = count up, -1 = count down (default: up)
 a4_current_led: .word 0        @ Index (0-7) of the LED we are currently on
 a4_skip_count: .word 0         @ How many ticks have elapsed since our last action
+
+a5_running: .word 0            @ 0 = A5 stopped, non-zero = A5 running (used by nkarimi0397_a5_tick)
+a5_num_to_skip: .word 0        @ How many ticks to skip between actions
+a5_direction: .word 1          @ +1 = count up, -1 = count down (default: up)
+a5_current_led: .word 0        @ Index (0-7) of the LED we are currently on
+a5_skip_count: .word 0         @ How many ticks have elapsed since our last action
 
 
 @ Assembly file ended by single .end directive on its own line
