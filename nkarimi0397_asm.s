@@ -357,6 +357,11 @@ nkarimi0397_a5_tick:
         eor r0, r0, r2           @ Toggle just those 4 bits
         str r0, [r1]             @ Write new output state back
 
+        @ ***** Keep the watchdog fed while A5 is running
+        @ NOTE: nkarimi0397_a5 initializes and starts the watchdog before
+        @ this tick function is ever reached, so it is safe to refresh here.
+        bl mes_IWDGRefresh
+
         @ DO NOT PUT LOGIC FOR A5 BELOW THIS LINE -----------------------------
         @ End of A5 skipped logic. Do not add logic below here.
 
