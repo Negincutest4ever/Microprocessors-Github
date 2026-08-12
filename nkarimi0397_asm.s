@@ -345,17 +345,41 @@ nkarimi0397_a5_tick:
         @ things, do things, and store things - do not use delays of any sort,
         @ and only use loops if they are bounded (that is, guaranteed to end)
 
-        @ ***** Direct memory addressing - toggle all 4 corner LEDs at once
-        @ Upper Left, Upper Right, Lower Left, Lower Right are on GPIOE,
-        @ same port/register used in nkarimi0397_lab9 for the cardinal LEDs.
-        @ Cardinal LEDs (N/E/S/W) sit on PE9/PE11/PE13/PE15 (mask 0xAA00),
-        @ so the four corner LEDs (UL/UR/LL/LR) sit on the other four pins
-        @ in the ring: PE8/PE10/PE12/PE14 (mask 0x5500).
-        ldr r1, =0x48001014      @ GPIOE_ODR address
-        ldr r0, [r1]             @ Read current output state
-        ldr r2, =0x5500          @ UL | UR | LL | LR bit mask
-        eor r0, r0, r2           @ Toggle just those 4 bits
-        str r0, [r1]             @ Write new output state back
+        @ ***** Check if it is time to act, or if we should keep waiting
+        @ (this was missing before - without it, the LEDs toggled every
+        @ single tick no matter what num_to_skip was set to)
+        ldr r1, =a5_skip_count
+        ldr r0, [r1]                @ r0 = current skip count
+        ldr r2, =a5_num_to_skip
+        ldr r3, [r2]                @ r3 = number of ticks we need to skip
+
+        cmp r0, r3
+        blt a5_tick_wait             @ Not yet time to act - just count this tick
+
+            @ ***** Do something - it is time to act, reset the skip counter
+            mov r0, #0
+            str r0, [r1]
+
+            @ ***** Direct memory addressing - toggle all 4 corner LEDs at once
+            @ Upper Left, Upper Right, Lower Left, Lower Right are on GPIOE,
+            @ same port/register used in nkarimi0397_lab9 for the cardinal LEDs.
+            @ Cardinal LEDs (N/E/S/W) sit on PE9/PE11/PE13/PE15 (mask 0xAA00),
+            @ so the four corner LEDs (UL/UR/LL/LR) sit on the other four pins
+            @ in the ring: PE8/PE10/PE12/PE14 (mask 0x5500).
+            ldr r1, =0x48001014      @ GPIOE_ODR address
+            ldr r0, [r1]             @ Read current output state
+            ldr r2, =0x5500          @ UL | UR | LL | LR bit mask
+            eor r0, r0, r2           @ Toggle just those 4 bits
+            str r0, [r1]             @ Write new output state back
+
+            b a5_tick_toggle_done
+
+        a5_tick_wait:
+            @ Not time to act yet - just increment the skip counter and wait
+            add r0, r0, #1
+            str r0, [r1]
+
+        a5_tick_toggle_done:
 
         @ ***** Keep the watchdog fed while A5 is running - unless the
         @ button has been pressed, in which case we deliberately stop
