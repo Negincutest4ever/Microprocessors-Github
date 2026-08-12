@@ -22,6 +22,11 @@ void mes_IWDGStart(void);
 
 void mes_IWDGRefresh(void);
 
+// Tracks whether the watchdog has actually been started anywhere in this
+// program. We can't ask the IWDG hardware "are you running?" directly, so
+// we track it ourselves at the one place we call mes_IWDGStart().
+static int watchdog_started = 0;
+
 // Declare assembly functions in C
 extern void nkarimi0397_a5_btn(void);
 extern void nkarimi0397_a4_tick(void);
@@ -117,6 +122,14 @@ void _nkarimi0397_Assignment5(int action)
     user_direction = 1;
   }
 
+  // Safety lever: never start A5 unless we know the watchdog is already
+  // running. If it isn't, warn the user and bail out instead of guessing.
+  if(!watchdog_started) {
+    printf("WARNING: watchdog has not been started. Run nkarimi0397_lab10 "
+           "first, then try nkarimi0397_a5 again. A5 was NOT started.\n");
+    return;
+  }
+
   int result = nkarimi0397_a5(user_status, user_num_to_skip, user_direction);
 
   printf("nkarimi0397_a5 returned: %d\n", result);
@@ -138,5 +151,6 @@ printf("Initializing Watchdog\n");
 mes_InitIWDG(9999);
 printf("Starting Watchdog\n");
 mes_IWDGStart();
+watchdog_started = 1;
 }
 ADD_CMD("nkarimi0397_lab10", Lab10_nkarimi0397,"Test the new lab 10 function")
