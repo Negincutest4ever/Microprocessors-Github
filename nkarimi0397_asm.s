@@ -201,10 +201,10 @@ nkarimi0397_a5:
     .size   nkarimi0397_a5, .-nkarimi0397_a5
 
 
-.global nkarimi0397_a4_btn
-.type   nkarimi0397_a4_btn, %function
+.global nkarimi0397_a5_btn
+.type   nkarimi0397_a5_btn, %function
 
-@ Function Declaration : void nkarimi0397_a4_btn(void)
+@ Function Declaration : void nkarimi0397_a5_btn(void)
 @
 @ Input: None
 @ Returns: Nothing
@@ -212,22 +212,23 @@ nkarimi0397_a5:
 @ Reminder - this requires the button has been initialized as an interrupt
 @ in main.c using BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI)
 @ as well as requires a new function set up void EXTI0_IRQHandler(void)
+@
+@ Unlike A4's button handler, A5's button handler does exactly one thing:
+@ record that the button was pressed by setting a5_btn_pressed to 1. The
+@ A5 tick function checks this flag to decide whether to keep refreshing
+@ the watchdog.
 
 @ Here is the actual function
-nkarimi0397_a4_btn:
+nkarimi0397_a5_btn:
     push {lr}
 
-    ldr r1, =a4_button_count        @ Get the address of the counter
-    ldr r0, [r1]                    @ Get the actual count
-    add r0, r0, #1                  @ Increment the count
-    and r0, #7                      @ Keep the count between 0 and 7
-    str r0, [r1]                    @ Store the new count
-
-    bl BSP_LED_Toggle               @ Toggle the current LED
+    ldr r1, =a5_btn_pressed          @ Get the address of the flag
+    mov r0, #1                       @ We only ever set it to 1
+    str r0, [r1]                     @ Record that the button was pressed
 
     pop {lr}
     bx lr
-    .size   nkarimi0397_a4_btn, .-nkarimi0397_a4_btn
+    .size   nkarimi0397_a5_btn, .-nkarimi0397_a5_btn
 .global nkarimi0397_a4_tick
 .type   nkarimi0397_a4_tick, %function
 
@@ -357,10 +358,17 @@ nkarimi0397_a5_tick:
         eor r0, r0, r2           @ Toggle just those 4 bits
         str r0, [r1]             @ Write new output state back
 
-        @ ***** Keep the watchdog fed while A5 is running
+        @ ***** Keep the watchdog fed while A5 is running - unless the
+        @ button has been pressed, in which case we deliberately stop
+        @ refreshing so the watchdog eventually times out and reboots.
         @ NOTE: nkarimi0397_a5 initializes and starts the watchdog before
         @ this tick function is ever reached, so it is safe to refresh here.
-        bl mes_IWDGRefresh
+        ldr r1, =a5_btn_pressed
+        ldr r0, [r1]
+        cmp r0, #0
+        bne a5_skip_refresh
+            bl mes_IWDGRefresh
+        a5_skip_refresh:
 
         @ DO NOT PUT LOGIC FOR A5 BELOW THIS LINE -----------------------------
         @ End of A5 skipped logic. Do not add logic below here.
@@ -457,6 +465,7 @@ a5_num_to_skip: .word 0        @ How many ticks to skip between actions
 a5_direction: .word 1          @ +1 = count up, -1 = count down (default: up)
 a5_current_led: .word 0        @ Index (0-7) of the LED we are currently on
 a5_skip_count: .word 0         @ How many ticks have elapsed since our last action
+a5_btn_pressed: .word 0        @ 0 = button not yet pressed, 1 = pressed (set by nkarimi0397_a5_btn)
 
 
 @ Assembly file ended by single .end directive on its own line
