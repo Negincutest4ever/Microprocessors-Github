@@ -149,6 +149,13 @@ nkarimi0397_a5:
     mov r5, r1                      @ r5 = num_to_skip
     mov r6, r2                      @ r6 = direction
 
+    @ Initialize the watchdog with a reload of 8000, then start it, so the
+    @ watchdog is guaranteed to be running before nkarimi0397_a5_tick ever
+    @ tries to refresh it.
+    ldr r0, =8000
+    bl mes_InitIWDG
+    bl mes_IWDGStart
+
     @ Store the value we received indicating the running state
     ldr r1, =a5_running
     str r4, [r1]
