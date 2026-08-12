@@ -149,12 +149,11 @@ nkarimi0397_a5:
     mov r5, r1                      @ r5 = num_to_skip
     mov r6, r2                      @ r6 = direction
 
-    @ Initialize the watchdog with a reload of 8000, then start it, so the
-    @ watchdog is guaranteed to be running before nkarimi0397_a5_tick ever
-    @ tries to refresh it.
-    ldr r0, =8000
-    bl mes_InitIWDG
-    bl mes_IWDGStart
+    @ NOTE: this function no longer starts the watchdog itself. The caller
+    @ (see _nkarimi0397_Assignment5 in the hook file) is responsible for
+    @ confirming the watchdog is already running before it ever calls us -
+    @ that keeps the "is it safe to run" decision, and the warning if it
+    @ isn't, in one place instead of duplicated in assembly.
 
     @ Store the value we received indicating the running state
     ldr r1, =a5_running
@@ -361,8 +360,9 @@ nkarimi0397_a5_tick:
         @ ***** Keep the watchdog fed while A5 is running - unless the
         @ button has been pressed, in which case we deliberately stop
         @ refreshing so the watchdog eventually times out and reboots.
-        @ NOTE: nkarimi0397_a5 initializes and starts the watchdog before
-        @ this tick function is ever reached, so it is safe to refresh here.
+        @ NOTE: _nkarimi0397_Assignment5 in the hook file refuses to even
+        @ call nkarimi0397_a5 unless the watchdog is already confirmed
+        @ running, so it is safe to refresh here.
         ldr r1, =a5_btn_pressed
         ldr r0, [r1]
         cmp r0, #0
